@@ -1,0 +1,21 @@
+{
+  "space": {
+    "1":  { "value": "4px" },
+    "2":  { "value": "8px" },
+    "3":  { "value": "12px" },
+    "4":  { "value": "16px" },
+    "5":  { "value": "20px" },
+    "6":  { "value": "24px", "comment": "Card padding" },
+    "8":  { "value": "32px", "comment": "Section gap" },
+    "10": { "value": "40px" },
+    "12": { "value": "48px" },
+    "16": { "value": "64px" }
+  },
+  "radius": {
+    "sm":   { "value": "4px",    "comment": "badges, chips, tags" },
+    "md":   { "value": "8px",    "comment": "inputs, buttons" },
+    "lg":   { "value": "12px",   "comment": "cards, panels" },
+    "xl":   { "value": "16px",   "comment": "modals, bottom sheets" },
+    "full": { "value": "9999px", "comment": "pills, avatars, toggles" }
+  }
+}

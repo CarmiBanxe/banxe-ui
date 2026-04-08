@@ -1,0 +1,20 @@
+[
+  {
+    "id": "wallet-gbp",
+    "currency": "GBP",
+    "total": "4750.00",
+    "available": "4700.00",
+    "pending": "50.00",
+    "iban": "GB29****1234",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "wallet-eur",
+    "currency": "EUR",
+    "total": "2100.00",
+    "available": "2100.00",
+    "pending": "0.00",
+    "iban": "DE89****5678",
+    "status": "ACTIVE"
+  }
+]

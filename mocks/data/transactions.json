@@ -1,0 +1,59 @@
+[
+  {
+    "id": "txn-001",
+    "counterparty": "FAKE_Amazon UK",
+    "reference": "REF-20260408-001",
+    "amount": "49.99",
+    "currency": "GBP",
+    "direction": "OUT",
+    "status": "COMPLETED",
+    "date": "2026-04-08",
+    "rail": "FPS"
+  },
+  {
+    "id": "txn-002",
+    "counterparty": "FAKE_Employer Ltd",
+    "reference": "SALARY-APR-2026",
+    "amount": "3500.00",
+    "currency": "GBP",
+    "direction": "IN",
+    "status": "COMPLETED",
+    "date": "2026-04-07",
+    "rail": "FPS"
+  },
+  {
+    "id": "txn-003",
+    "counterparty": "FAKE_SEPA Recipient GmbH",
+    "reference": "INV-2026-0412",
+    "amount": "1200.00",
+    "currency": "EUR",
+    "direction": "OUT",
+    "status": "PENDING",
+    "date": "2026-04-08",
+    "rail": "SEPA"
+  },
+  {
+    "id": "txn-004",
+    "counterparty": "FAKE_Suspicious Corp",
+    "reference": "REF-REVIEW-001",
+    "amount": "9800.00",
+    "currency": "GBP",
+    "direction": "OUT",
+    "status": "REVIEW",
+    "date": "2026-04-08",
+    "rail": "FPS",
+    "compliance_note": "AML review triggered — amount below EDD threshold but pattern flagged"
+  },
+  {
+    "id": "txn-005",
+    "counterparty": "FAKE_Payment Attempt",
+    "reference": "REF-BLOCKED-001",
+    "amount": "500.00",
+    "currency": "GBP",
+    "direction": "OUT",
+    "status": "BLOCKED",
+    "date": "2026-04-07",
+    "rail": "FPS",
+    "compliance_note": "Sanctions hit — jurisdiction blocked"
+  }
+]

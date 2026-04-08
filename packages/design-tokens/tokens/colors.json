@@ -1,0 +1,42 @@
+{
+  "color": {
+    "bg": {
+      "base":     { "value": "#080C14", "comment": "Deepest surface — page background" },
+      "surface":  { "value": "#0F1520", "comment": "Card / panel surface" },
+      "elevated": { "value": "#16202E", "comment": "Modal, dropdown, elevated card" },
+      "overlay":  { "value": "#1E2A3A", "comment": "Hover / selected state" }
+    },
+    "border": {
+      "subtle":  { "value": "#1F2D3D" },
+      "default": { "value": "#2A3D52" },
+      "strong":  { "value": "#3D5570" }
+    },
+    "text": {
+      "primary":   { "value": "#E8EDF5" },
+      "secondary": { "value": "#8DA0B5" },
+      "disabled":  { "value": "#4A5F72" },
+      "inverse":   { "value": "#080C14" }
+    },
+    "brand": {
+      "primary": { "value": "#1A7FD4" },
+      "light":   { "value": "#3A9FE8" },
+      "subtle":  { "value": "#1A3A5C" }
+    },
+    "status": {
+      "success":        { "value": "#22C55E" },
+      "successSubtle":  { "value": "#0F2B1A" },
+      "warning":        { "value": "#F59E0B" },
+      "warningSubtle":  { "value": "#2B1F08" },
+      "error":          { "value": "#EF4444" },
+      "errorSubtle":    { "value": "#2B0F0F" },
+      "info":           { "value": "#60A5FA" },
+      "infoSubtle":     { "value": "#0F1F3A" },
+      "pending":        { "value": "#6B7280" }
+    },
+    "ai": {
+      "accent": { "value": "#7C3AED", "comment": "AI-generated content markers" },
+      "subtle": { "value": "#1A0F2B" }
+    },
+    "compliance": { "value": "#F59E0B" }
+  }
+}
