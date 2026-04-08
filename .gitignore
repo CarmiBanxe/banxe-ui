@@ -1,0 +1,8 @@
+node_modules/
+.pipeline/
+packages/design-tokens/build/
+storybook/storybook-static/
+apps/web/dist/
+apps/mobile/.expo/
+*.log
+.DS_Store
