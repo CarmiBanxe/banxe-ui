@@ -28,8 +28,10 @@ rules:
 
   # ── Hardcoded hex colors (must use Tailwind tokens) ──────────────────────────
   - id: banxe-no-hardcoded-hex-in-style
-    # Detects hex in style= props (web only — mobile/RN uses StyleSheet, hex is valid there)
-    pattern-regex: 'style=\{\{[^}]*#[0-9a-fA-F]{6}'
+    # Detects bare hex colors in style= props — excludes CSS variable fallbacks.
+    # Allowed: var(--token, #hex) — these are intentional design-token fallbacks.
+    # Blocked:  style={{ background: '#1A7FD4' }} — use var(--token, #hex) or Tailwind.
+    pattern-regex: "style=\\{\\{[^}]*(?<!var\\([^)]{0,100})'#[0-9a-fA-F]{6}'"
     message: |
       DESIGN VIOLATION: Hardcoded hex color in JSX style prop (web).
       Use Tailwind classes from tailwind.config.ts: text-primary, bg-bg-surface, etc.

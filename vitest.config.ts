@@ -33,10 +33,10 @@ export default defineConfig({
       include: ['packages/ui/src/**/*.{ts,tsx}', 'apps/web/src/**/*.{ts,tsx}'],
       exclude: ['**/*.stories.tsx', '**/*.test.{ts,tsx}', '**/index.ts'],
       thresholds: {
-        lines: 70,
+        lines: 80,
         branches: 70,
-        functions: 70,
-        statements: 70,
+        functions: 80,
+        statements: 80,
       },
     },
   },

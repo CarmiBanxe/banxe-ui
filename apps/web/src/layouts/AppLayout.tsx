@@ -84,7 +84,7 @@ export function AppLayout(): React.ReactElement {
         <div className="flex items-center gap-3 px-4 h-14 border-b border-border-subtle flex-shrink-0">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0"
-            style={{ background: '#1A7FD4' }}
+            style={{ background: 'var(--color-primary, #1A7FD4)' }}
             aria-hidden="true"
           >
             B

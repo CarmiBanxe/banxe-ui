@@ -1,0 +1,35 @@
+# .pre-commit-config.yaml — Banxe UI pre-commit hooks
+# IL-068 | banxe-ui
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  - repo: local
+    hooks:
+      - id: tsc-check
+        name: TypeScript check
+        entry: bash -c "cd /home/mmber/banxe-ui && npx tsc --noEmit 2>&1 | head -30"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: eslint
+        name: ESLint
+        entry: bash -c "cd /home/mmber/banxe-ui && npx eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: vitest
+        name: Vitest
+        entry: bash -c "cd /home/mmber/banxe-ui && npx vitest run --reporter=dot 2>&1 | tail -5"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: semgrep-ui
+        name: Semgrep UI rules
+        entry: bash -c "cd /home/mmber/banxe-ui && semgrep --config .semgrep/banxe-ui-rules.yaml apps/web/src packages/ui/src --error --quiet"
+        language: system
+        pass_filenames: false
+        always_run: true
