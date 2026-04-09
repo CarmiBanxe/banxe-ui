@@ -1,0 +1,152 @@
+rules:
+  # ── I-05: No parseFloat / Number() on monetary amounts ───────────────────────
+  - id: banxe-no-parsefloat-amounts
+    patterns:
+      - pattern: parseFloat($X)
+      - pattern-not-inside: |
+          // I-05-EXEMPT: $...
+    message: |
+      I-05 VIOLATION: parseFloat() used near monetary value. Use string amounts throughout.
+      All monetary values must stay as string until display-time formatting.
+      Reference: banxe-architecture/INVARIANTS.md#I-05
+    languages: [typescript, tsx]
+    severity: ERROR
+    paths:
+      include:
+        - "apps/**/*.tsx"
+        - "apps/**/*.ts"
+        - "packages/**/*.tsx"
+
+  - id: banxe-no-number-cast-amounts
+    pattern: Number($AMOUNT)
+    message: |
+      I-05 VIOLATION: Number() cast may be used on a monetary amount.
+      Verify this is not a financial value — if it is, keep as Decimal/string.
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/**/*.tsx"
+        - "packages/ui/src/financial/**/*.tsx"
+
+  # ── Hardcoded hex colors (must use Tailwind tokens) ──────────────────────────
+  - id: banxe-no-hardcoded-hex-color
+    patterns:
+      - pattern: |
+          style={{..., color: "$HEX", ...}}
+      - pattern: |
+          style={{..., backgroundColor: "$HEX", ...}}
+      - pattern: |
+          style={{..., borderColor: "$HEX", ...}}
+    pattern-regex: "#[0-9a-fA-F]{3,6}"
+    message: |
+      DESIGN VIOLATION: Hardcoded hex color in style prop.
+      Use Tailwind classes from tailwind.config.ts instead:
+        text-primary, bg-bg-surface, border-border-default, text-brand-primary, etc.
+    languages: [typescript, tsx]
+    severity: ERROR
+    paths:
+      include:
+        - "apps/web/src/**/*.tsx"
+        - "packages/ui/src/**/*.tsx"
+
+  # ── AI content requires ✦ badge ──────────────────────────────────────────────
+  - id: banxe-ai-response-missing-badge
+    patterns:
+      - pattern: |
+          <AIInsightCard $...PROPS />
+      - pattern-not: |
+          <AIInsightCard $...PROPS badge={...} $...REST />
+    message: |
+      AI TRUST VIOLATION: <AIInsightCard> must have a badge prop.
+      AI-generated content requires ✦ badge with text-ai-accent color.
+      Reference: BANXE-UI-UX-SYSTEM.md — AI Trust Layer
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/**/*.tsx"
+
+  # ── Loading states must use Skeleton, not spinner-only ───────────────────────
+  - id: banxe-no-spinner-only-loading
+    patterns:
+      - pattern: |
+          {$LOADING && <Spinner $...PROPS />}
+      - pattern-not-inside: |
+          <$SKELETON $...PROPS />
+    message: |
+      UX VIOLATION: Spinner-only loading state.
+      Use Skeleton components for loading: TransactionRowSkeleton, BalanceWidgetSkeleton.
+      Spinner is allowed as secondary indicator alongside a skeleton layout.
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/**/*.tsx"
+
+  # ── Amounts must use font-mono ────────────────────────────────────────────────
+  - id: banxe-amount-missing-font-mono
+    pattern: |
+      <AmountInput $...PROPS />
+    pattern-not: |
+      <AmountInput $...PROPS monospace={true} $...REST />
+    message: |
+      I-05 DISPLAY: <AmountInput> should have monospace={true} for monetary display.
+      Amounts use JetBrains Mono / Fira Code for alignment consistency.
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/**/*.tsx"
+
+  # ── No console.log in production UI code ─────────────────────────────────────
+  - id: banxe-no-console-log
+    pattern: console.log(...)
+    message: |
+      Remove console.log() before committing. Use console.warn() or console.error() only.
+      ESLint rule no-console is already set to error — this Semgrep rule catches it earlier.
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/**/*.ts"
+        - "apps/**/*.tsx"
+        - "packages/**/*.ts"
+        - "packages/**/*.tsx"
+
+  # ── ARIA labels on interactive elements ──────────────────────────────────────
+  - id: banxe-button-missing-aria-label
+    patterns:
+      - pattern: |
+          <button $...PROPS>
+            <$ICON $...ICONPROPS />
+          </button>
+      - pattern-not: |
+          <button $...PROPS aria-label="..." $...REST>
+            <$ICON $...ICONPROPS />
+          </button>
+    message: |
+      A11Y VIOLATION: Icon-only button missing aria-label.
+      All interactive elements must have accessible names for WCAG AA compliance.
+    languages: [typescript, tsx]
+    severity: ERROR
+    paths:
+      include:
+        - "apps/**/*.tsx"
+        - "packages/ui/src/**/*.tsx"
+
+  # ── ComplianceFlag required for BLOCKED/REVIEW transactions ──────────────────
+  - id: banxe-compliance-flag-required
+    patterns:
+      - pattern: |
+          status === "BLOCKED"
+      - pattern-not-inside: |
+          <ComplianceFlag $...PROPS />
+    message: |
+      COMPLIANCE: Transaction with status BLOCKED should render <ComplianceFlag />.
+      Required for FCA audit trail visibility.
+    languages: [typescript, tsx]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/web/src/screens/**/*.tsx"

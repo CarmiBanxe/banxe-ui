@@ -13,8 +13,13 @@
     "build:storybook": "npm run build-storybook --workspace=storybook",
     "storybook": "npm run storybook --workspace=storybook",
     "test": "npm run test --workspace=packages/ui",
+    "test:all": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
     "lint": "eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0",
-    "typecheck": "tsc --build packages/ui/tsconfig.json apps/web/tsconfig.json"
+    "typecheck": "tsc --build packages/ui/tsconfig.json apps/web/tsconfig.json",
+    "semgrep": "semgrep --config .semgrep/banxe-ui-rules.yaml apps/web/src packages/ui/src",
+    "quality": "npm run typecheck && npm run lint && npm run test:all && npm run semgrep"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
