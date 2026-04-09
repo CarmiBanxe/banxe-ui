@@ -5,7 +5,7 @@
   "description": "BANXE AI BANK — UI prototype workspace (Developer Plane)",
   "workspaces": [
     "packages/*",
-    "apps/*",
+    "apps/web",
     "storybook"
   ],
   "scripts": {
