@@ -6,3 +6,7 @@ apps/web/dist/
 apps/mobile/.expo/
 *.log
 .DS_Store
+
+packages/ui/dist/
+packages/ui/tsconfig.tsbuildinfo
+node_modules/
