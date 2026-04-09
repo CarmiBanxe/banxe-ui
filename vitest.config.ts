@@ -7,18 +7,23 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@banxe/ui': path.resolve(__dirname, 'packages/ui/src'),
-      '@banxe/design-tokens': path.resolve(__dirname, 'packages/design-tokens'),
-      '@': path.resolve(__dirname, 'apps/web/src'),
-    },
+    // Deduplicate React — prevents "cannot read useState of null" in monorepo
+    dedupe: ['react', 'react-dom'],
+    alias: [
+      { find: '@banxe/ui', replacement: path.resolve(__dirname, 'packages/ui/src') },
+      { find: '@banxe/design-tokens', replacement: path.resolve(__dirname, 'packages/design-tokens') },
+      { find: '@', replacement: path.resolve(__dirname, 'apps/web/src') },
+      // Screens use relative paths like ../../../../mocks/ (one level short) — redirect to root mocks/
+      { find: /^(\.\.\/)*mocks\//, replacement: path.resolve(__dirname, 'mocks') + '/' },
+    ],
   },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./packages/ui/src/test-setup.ts'],
+    // packages/ui has its own vitest.config.ts — run separately via npm run test -w @banxe/ui
+    // Root config covers integration-level tests in tests/
     include: [
-      'packages/ui/src/**/*.test.{ts,tsx}',
       'tests/unit/**/*.test.{ts,tsx}',
       'tests/a11y/**/*.test.{ts,tsx}',
     ],

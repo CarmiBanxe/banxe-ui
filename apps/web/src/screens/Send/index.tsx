@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { AmountInput, StatusChip } from '@banxe/ui'
-import wallets from '../../../../mocks/data/wallets.json'
 
 /**
  * Send / Transfer — W-04
@@ -96,7 +95,7 @@ export function Send(): React.ReactElement {
   const [resultType, setResultType] = useState<ResultType>('success')
   const [reference, setReference] = useState('')
 
-  const numAmount = parseFloat(amount || '0')
+  const numAmount = +(amount || '0')
   const requiresSCA = numAmount > 30
   const requiresTypedConfirm = numAmount > 10000
   const [typedConfirm, setTypedConfirm] = useState('')
@@ -208,7 +207,7 @@ export function Send(): React.ReactElement {
                         setStep('amount')
                       }}
                       className="flex items-center justify-between p-3 rounded-lg bg-surface border border-border-subtle hover:bg-overlay transition-colors text-left"
-                      aria-label={`Select ${b.name} with IBAN ${b.iban}`}
+                      aria-label={`Send to ${b.name}`}
                     >
                       <div>
                         <p className="text-sm font-semibold text-primary">{b.name}</p>
@@ -309,7 +308,7 @@ export function Send(): React.ReactElement {
               </button>
               <button
                 onClick={() => setStep('confirm')}
-                disabled={!amount || parseFloat(amount) <= 0}
+                disabled={!amount || +amount <= 0}
                 className="flex-1 py-2 rounded-lg bg-brand-primary text-inverse text-sm font-medium hover:bg-brand-light disabled:opacity-50 transition-colors"
               >
                 Review →
@@ -457,7 +456,7 @@ export function Send(): React.ReactElement {
                 </div>
                 <h2 className="text-xl font-bold text-primary">Payment under review</h2>
                 <p className="text-sm text-secondary text-center max-w-xs">
-                  This payment requires compliance review. You'll be notified within 2 business days.
+                  This payment requires compliance review. You&apos;ll be notified within 2 business days.
                 </p>
                 <button onClick={reset} className="mt-4 px-6 py-2 rounded-lg bg-surface border border-border-default text-sm text-primary hover:bg-overlay transition-colors">
                   Done

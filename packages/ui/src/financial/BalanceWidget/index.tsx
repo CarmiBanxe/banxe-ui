@@ -33,6 +33,7 @@ export function BalanceWidget({
   if (loading) {
     return (
       <div
+        role="status"
         className="rounded-lg bg-surface p-6 animate-pulse"
         aria-busy="true"
         aria-label="Loading balance"
@@ -65,7 +66,11 @@ export function BalanceWidget({
   }
 
   return (
-    <div className="rounded-lg bg-surface p-6">
+    <div
+      role="region"
+      aria-label={`${currency} balance`}
+      className="rounded-lg bg-surface p-6"
+    >
       {/* Currency label */}
       <p className="text-xs text-secondary uppercase tracking-wider mb-1">
         {currency} Balance

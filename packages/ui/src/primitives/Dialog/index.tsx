@@ -70,18 +70,20 @@ export function Dialog({
         aria-hidden="true"
       />
 
-      {/* Panel */}
+      {/* Panel — tabIndex makes dialog panel focusable (required for focus trap) */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
+        tabIndex={-1}
         className={[
           'relative w-full bg-elevated border border-border-default rounded-xl shadow-modal',
           'animate-fade-in',
           MAX_W[maxWidth],
         ].join(' ')}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-border-subtle">

@@ -108,7 +108,7 @@ export function Profile(): React.ReactElement {
               />
             </div>
             <div>
-              <label className="block text-xs text-secondary mb-1">Email</label>
+              <p className="block text-xs text-secondary mb-1">Email</p>
               <p className="text-sm text-secondary">{profile.email} — contact support to change</p>
             </div>
             <div className="flex gap-2 mt-2">
@@ -270,6 +270,7 @@ export function Profile(): React.ReactElement {
         <button
           onClick={() => setShowDangerZone((v) => !v)}
           className="flex items-center justify-between w-full text-left"
+          aria-label="Danger zone"
           aria-expanded={showDangerZone}
         >
           <h2 className="text-sm font-semibold text-error">Danger zone</h2>

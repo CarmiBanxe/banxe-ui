@@ -1,6 +1,6 @@
 import React from 'react'
 
-export type FlagType = 'AML' | 'SANCTIONS' | 'EDD' | 'SAR' | 'STRUCTURING'
+export type FlagType = 'AML' | 'SANCTIONS' | 'EDD' | 'SAR' | 'STRUCTURING' | 'REVIEW' | 'BLOCKED'
 
 interface ComplianceFlagProps {
   type: FlagType
@@ -14,6 +14,8 @@ const FLAG_CONFIG: Record<FlagType, { label: string; detail: string; className: 
   EDD:          { label: 'EDD Required', detail: 'Enhanced due diligence required',   className: 'border-warning text-warning bg-warning-subtle' },
   SAR:          { label: 'SAR Filed',    detail: 'Suspicious activity report filed',  className: 'border-error text-error bg-error-subtle' },
   STRUCTURING:  { label: 'Structuring',  detail: 'Possible structuring detected',     className: 'border-warning text-warning bg-warning-subtle' },
+  REVIEW:       { label: 'Under Review', detail: 'Transaction flagged for review',    className: 'border-warning text-warning bg-warning-subtle' },
+  BLOCKED:      { label: 'Blocked',      detail: 'Transaction blocked by compliance', className: 'border-error text-error bg-error-subtle' },
 }
 
 /**

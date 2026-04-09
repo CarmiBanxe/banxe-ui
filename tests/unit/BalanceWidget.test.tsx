@@ -23,7 +23,7 @@ describe('BalanceWidget', () => {
 
   it('displays currency', () => {
     render(<BalanceWidget {...DEFAULT_PROPS} />)
-    expect(screen.getByText('GBP')).toBeTruthy()
+    expect(screen.getByText(/GBP Balance/i)).toBeTruthy()
   })
 
   it('displays available amount', () => {
@@ -78,7 +78,8 @@ describe('BalanceWidget', () => {
         pending="0.00"
       />,
     )
-    expect(screen.getByText('EUR')).toBeTruthy()
-    expect(screen.getByText('2100.00')).toBeTruthy()
+    expect(screen.getByText(/EUR Balance/i)).toBeTruthy()
+    // total=available=2100.00 renders twice — use getAllByText
+    expect(screen.getAllByText('2100.00').length).toBeGreaterThan(0)
   })
 })

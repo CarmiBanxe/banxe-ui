@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TransactionRow, StatusChip, ComplianceFlag } from '@banxe/ui'
+import { TransactionRow, ComplianceFlag } from '@banxe/ui'
 import type { TransactionStatus } from '@banxe/ui'
 import transactions from '../../../../mocks/data/transactions.json'
 
@@ -185,7 +185,7 @@ export function Transactions(): React.ReactElement {
         <div className="mt-4">
           <ComplianceFlag
             type="REVIEW"
-            message="Some transactions are under compliance review. Our team will contact you within 2 business days."
+            note="Some transactions are under compliance review. Our team will contact you within 2 business days."
           />
         </div>
       )}

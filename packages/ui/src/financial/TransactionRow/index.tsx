@@ -52,7 +52,7 @@ export function TransactionRow({
   return (
     <div
       className="flex items-center gap-4 px-4 py-3 min-h-[64px] border-b border-border-subtle hover:bg-overlay transition-colors"
-      role="row"
+      role="article"
     >
       {/* Counterparty info */}
       <div className="flex-1 min-w-0">

@@ -1,0 +1,22 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+const STATUS_CONFIG = {
+    COMPLETED: { label: 'Completed', className: 'bg-success-subtle text-success' },
+    PENDING: { label: 'Pending', className: 'bg-warning-subtle text-warning' },
+    FAILED: { label: 'Failed', className: 'bg-error-subtle text-error' },
+    BLOCKED: { label: 'Blocked', className: 'bg-error-subtle text-error border border-error' },
+    REVIEW: { label: 'Review', className: 'bg-warning-subtle text-warning border border-warning' },
+};
+/**
+ * TransactionRow — single transaction list item.
+ *
+ * Amount is always a string (Decimal-safe).
+ * Status chip includes text (not color alone) for accessibility.
+ * Minimum height: 64px.
+ */
+export function TransactionRow({ counterparty, reference, amount, currency, direction, status, date, }) {
+    const { label, className } = STATUS_CONFIG[status];
+    const sign = direction === 'IN' ? '+' : '-';
+    const amountClass = direction === 'IN' ? 'text-success' : 'text-primary';
+    return (_jsxs("div", { className: "flex items-center gap-4 px-4 py-3 min-h-[64px] border-b border-border-subtle hover:bg-overlay transition-colors", role: "row", children: [_jsxs("div", { className: "flex-1 min-w-0", children: [_jsx("p", { className: "text-base font-semibold text-primary truncate", children: counterparty }), reference && (_jsx("p", { className: "text-xs font-mono text-secondary truncate", children: reference }))] }), _jsxs("div", { className: "text-right flex-shrink-0", children: [_jsxs("p", { className: `text-md font-mono font-bold ${amountClass}`, "aria-label": `${sign}${amount} ${currency}`, children: [sign, amount, " ", currency] }), _jsxs("div", { className: "flex items-center justify-end gap-2 mt-1", children: [_jsx("span", { className: `text-xs px-2 py-0.5 rounded-sm font-medium ${className}`, role: "status", "aria-label": `Status: ${label}`, children: label }), _jsx("span", { className: "text-xs text-secondary", children: date })] })] })] }));
+}
+//# sourceMappingURL=index.js.map

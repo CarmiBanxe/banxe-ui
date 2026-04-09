@@ -25,7 +25,7 @@ interface WalletCardProps {
   onSelect: () => void
 }
 
-function WalletCard({ currency, total, available, pending, iban, status, isSelected, onSelect }: WalletCardProps) {
+function WalletCard({ currency, total: _total, available, pending, iban, status, isSelected, onSelect }: WalletCardProps) {
   const isRestricted = status === 'RESTRICTED' || status === 'SUSPENDED'
   return (
     <button
@@ -158,7 +158,7 @@ export function Wallets(): React.ReactElement {
             <button
               onClick={() => setShowDeposit(true)}
               className="p-4 rounded-lg bg-surface border border-border-subtle hover:bg-overlay transition-colors text-center"
-              aria-label={`Deposit to ${selected.currency} wallet`}
+              aria-label={`Deposit to ${selected.currency}`}
             >
               <span className="text-2xl block mb-1" aria-hidden="true">↓</span>
               <span className="text-sm text-primary">Deposit</span>
@@ -166,7 +166,7 @@ export function Wallets(): React.ReactElement {
             <button
               onClick={() => setShowWithdraw(true)}
               className="p-4 rounded-lg bg-surface border border-border-subtle hover:bg-overlay transition-colors text-center"
-              aria-label={`Withdraw from ${selected.currency} wallet`}
+              aria-label={`Withdraw from ${selected.currency}`}
             >
               <span className="text-2xl block mb-1" aria-hidden="true">↑</span>
               <span className="text-sm text-primary">Withdraw</span>

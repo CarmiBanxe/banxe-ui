@@ -50,7 +50,7 @@ export function AmountInput({
   const isOverBalance =
     available !== undefined &&
     raw !== '' &&
-    parseFloat(raw) > parseFloat(available)
+    +raw > +(available)
 
   return (
     <div className="flex flex-col gap-1.5">

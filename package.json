@@ -13,7 +13,7 @@
     "build:storybook": "npm run build-storybook --workspace=storybook",
     "storybook": "npm run storybook --workspace=storybook",
     "test": "npm run test --workspace=packages/ui",
-    "test:all": "vitest run --config vitest.config.ts",
+    "test:all": "npm run test --workspace=packages/ui && vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "test:coverage": "vitest run --config vitest.config.ts --coverage",
     "lint": "eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0",
@@ -22,12 +22,22 @@
     "quality": "npm run typecheck && npm run lint && npm run test:all && npm run semgrep"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest-axe": "^3.5.9",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^8.57.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "typescript": "^5.4.0"
+    "jest-axe": "^10.0.0",
+    "jsdom": "^29.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.1"
   }
 }
