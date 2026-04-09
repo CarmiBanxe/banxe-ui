@@ -5,8 +5,8 @@ import {
   AIInsightCard,
   StatusChip,
 } from '@banxe/ui'
-import wallets from '../../../../mocks/data/wallets.json'
-import transactions from '../../../../mocks/data/transactions.json'
+import wallets from '../../../../../mocks/data/wallets.json'
+import transactions from '../../../../../mocks/data/transactions.json'
 import type { TransactionStatus } from '@banxe/ui'
 
 /**

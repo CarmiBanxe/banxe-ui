@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { BalanceWidget, StatusChip } from '@banxe/ui'
 import type { ChipStatus } from '@banxe/ui'
-import wallets from '../../../../mocks/data/wallets.json'
+import wallets from '../../../../../mocks/data/wallets.json'
 
 /**
  * Wallets — W-03

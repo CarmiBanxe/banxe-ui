@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TransactionRow, ComplianceFlag } from '@banxe/ui'
 import type { TransactionStatus } from '@banxe/ui'
-import transactions from '../../../../mocks/data/transactions.json'
+import transactions from '../../../../../mocks/data/transactions.json'
 
 /**
  * Transactions — W-02

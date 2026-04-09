@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npx tsc --noEmit -p apps/web/tsconfig.json
 
       - name: ESLint
         run: npx eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0
