@@ -19,7 +19,8 @@
     "lint": "eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc --build packages/ui/tsconfig.json apps/web/tsconfig.json",
     "semgrep": "semgrep --config .semgrep/banxe-ui-rules.yaml apps/web/src packages/ui/src",
-    "quality": "npm run typecheck && npm run lint && npm run test:all && npm run semgrep"
+    "quality": "bash scripts/banxe-build.sh",
+    "test:a11y": "npx vitest run tests/a11y"
   },
   "devDependencies": {
     "@axe-core/react": "^4.11.1",
