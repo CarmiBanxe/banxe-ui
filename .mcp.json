@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "description": "Актуальная документация React/Tailwind/Expo/RN — добавь 'use context7' к промпту"
+    },
+    "figma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@figma/mcp-server"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}"
+      },
+      "description": "Semantic Figma reading — цветовые токены, компоненты, Auto Layout"
+    },
+    "storybook": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@chromatic/mcp-server"],
+      "description": "BANXE компоненты как живой контекст — Claude Code видит реальный @banxe/ui"
+    }
+  }
+}

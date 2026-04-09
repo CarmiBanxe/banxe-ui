@@ -1,0 +1,52 @@
+{
+  "permissions": {
+    "allow": [
+      "Read", "Glob", "Grep", "LS",
+      "Edit", "MultiEdit", "Write", "Bash"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/developer/.claude/hooks/banxe-ui-session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/developer/.claude/hooks/inject-design-rules.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/developer/.claude/hooks/pro-workflow-capture.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/developer/.claude/hooks/pro-workflow-capture.py --session-end"
+          }
+        ]
+      }
+    ]
+  }
+}
