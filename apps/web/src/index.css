@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base resets ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #080C14;
+  color: #E8EDF5;
+  font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #080C14; }
+::-webkit-scrollbar-thumb { background: #2A3D52; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3D5570; }
+
+/* ── Focus ring ──────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #1A7FD4;
+  outline-offset: 2px;
+}
+
+/* ── Monospace amounts ───────────────────────────────────────────────────── */
+.amount { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+/* ── AI accent badge ─────────────────────────────────────────────────────── */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1A0F2B;
+  color: #7C3AED;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── Skeleton shimmer ────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #0F1520 25%, #16202E 50%, #0F1520 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}

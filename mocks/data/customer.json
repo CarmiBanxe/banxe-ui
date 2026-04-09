@@ -1,0 +1,25 @@
+{
+  "id": "cust-001",
+  "name": "FAKE_John Smith",
+  "email": "j.smith@example.com",
+  "entity_type": "individual",
+  "kyc_status": "APPROVED",
+  "edd_status": "NOT_REQUIRED",
+  "risk_level": "LOW",
+  "created_at": "2026-01-15T10:00:00Z",
+  "two_fa_enabled": true,
+  "notifications": {
+    "email": true,
+    "sms": false,
+    "push": true
+  },
+  "address": {
+    "line1": "123 FAKE Street",
+    "city": "London",
+    "postcode": "EC1A 1BB",
+    "country": "GB"
+  },
+  "documents": [
+    { "type": "PASSPORT", "status": "VERIFIED", "expires": "2030-06-01" }
+  ]
+}

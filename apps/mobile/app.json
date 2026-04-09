@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "BANXE AI Bank",
+    "slug": "banxe-ai-bank",
+    "version": "1.0.0",
+    "scheme": "banxe",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#080C14"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.banxe.aibank"
+    },
+    "android": {
+      "package": "com.banxe.aibank",
+      "adaptiveIcon": {
+        "backgroundColor": "#080C14"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
