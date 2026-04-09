@@ -11,6 +11,11 @@ const config: StorybookConfig = {
     name: '@storybook/react-vite',
     options: {},
   },
+  docs: {
+    autodocs: 'tag',
+  },
+  experimental_componentManifest: true,
+  codeExamples: true,
   viteFinalConfig(config) {
     config.resolve = config.resolve ?? {}
     config.resolve.alias = {
