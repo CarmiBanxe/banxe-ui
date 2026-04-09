@@ -1,34 +1,19 @@
 {
   "expo": {
-    "name": "BANXE AI Bank",
-    "slug": "banxe-ai-bank",
-    "version": "1.0.0",
+    "name": "BANXE AI BANK",
+    "slug": "banxe-mobile",
     "scheme": "banxe",
+    "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
     "splash": {
-      "backgroundColor": "#080C14"
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D1B2A"
     },
-    "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.banxe.aibank"
-    },
-    "android": {
-      "package": "com.banxe.aibank",
-      "adaptiveIcon": {
-        "backgroundColor": "#080C14"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static"
-    },
-    "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "ios": { "bundleIdentifier": "com.banxe.mobile", "supportsTablet": false },
+    "android": { "package": "com.banxe.mobile", "adaptiveIcon": { "backgroundColor": "#0D1B2A" } },
+    "plugins": ["expo-router", "expo-local-authentication", "expo-secure-store"]
   }
 }
