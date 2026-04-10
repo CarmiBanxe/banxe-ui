@@ -1,0 +1,24 @@
+name: Confluence Sync
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch Confluence page
+        run: |
+          mkdir -p docs/confluence
+          curl -sf -u "${{ secrets.CONFLUENCE_EMAIL }}:${{ secrets.CONFLUENCE_TOKEN }}" \
+            "https://banxe.atlassian.net/wiki/rest/api/content/1243185153?expand=body.storage,version,title" \
+            -o docs/confluence/page-1243185153.json
+          python3 -c "import json;d=json.load(open('docs/confluence/page-1243185153.json'));print('Synced:',d['title'],'v'+str(d['version']['number']))"
+      - name: Commit if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/confluence/
+          git diff --cached --quiet || git commit -m "docs: sync Confluence page $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
