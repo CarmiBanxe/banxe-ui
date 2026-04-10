@@ -1,5 +1,5 @@
 {
-  "name": "@banxe/web",
+  "name": "@banxe/web-vite",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@banxe/ui": "*",
+    "@banxe/ui": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
     "lucide-react": "^0.368.0",
     "msw": "^2.2.0",

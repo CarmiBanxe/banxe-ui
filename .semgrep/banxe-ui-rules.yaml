@@ -40,7 +40,7 @@ rules:
     severity: WARNING
     paths:
       include:
-        - "apps/web/src/**/*.tsx"
+        - "apps/web-vite/src/**/*.tsx"
 
   # ── No console.log in production UI code ─────────────────────────────────────
   - id: banxe-no-console-log
@@ -67,4 +67,4 @@ rules:
     severity: WARNING
     paths:
       include:
-        - "apps/web/src/screens/**/*.tsx"
+        - "apps/web-vite/src/screens/**/*.tsx"
