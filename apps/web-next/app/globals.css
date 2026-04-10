@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "@banxe/design-tokens/build/css/tokens.css";
+
+/* ── BANXE Design System — Tailwind v4 theme ──────────────────────────────── */
+@theme inline {
+  /* Brand */
+  --color-primary:        var(--color-brand-primary);
+  --color-primary-light:  var(--color-brand-primary-light);
+  --color-primary-subtle: var(--color-brand-primary-subtle);
+  --color-accent:         var(--color-brand-accent);
+  --color-accent-light:   var(--color-brand-accent-light);
+  --color-accent-subtle:  var(--color-brand-accent-subtle);
+
+  /* Background */
+  --color-bg-page:     var(--color-bg-page);
+  --color-bg-surface:  var(--color-bg-surface);
+  --color-bg-elevated: var(--color-bg-elevated);
+
+  /* Border */
+  --color-border-subtle:  var(--color-border-subtle);
+  --color-border-default: var(--color-border-default);
+  --color-border-strong:  var(--color-border-strong);
+  --color-border-focus:   var(--color-border-focus);
+
+  /* Text */
+  --color-text-primary:   var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-disabled:  var(--color-text-disabled);
+  --color-text-inverse:   var(--color-text-inverse);
+  --color-text-link:      var(--color-text-link);
+
+  /* Status */
+  --color-success:        var(--color-status-success);
+  --color-success-subtle: var(--color-status-success-subtle);
+  --color-warning:        var(--color-status-warning);
+  --color-warning-subtle: var(--color-status-warning-subtle);
+  --color-error:          var(--color-status-error);
+  --color-error-subtle:   var(--color-status-error-subtle);
+  --color-info:           var(--color-status-info);
+  --color-info-subtle:    var(--color-status-info-subtle);
+  --color-pending:        var(--color-status-pending);
+
+  /* Fonts — WCAG 2.1 AA */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Roboto', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Border radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-pill: 9999px;
+}
+
+/* ── Base styles ─────────────────────────────────────────────────────────── */
+body {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-text-link);
+}
+
+/* ── Focus visible — WCAG 2.1 AA ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

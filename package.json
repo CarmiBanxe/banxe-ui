@@ -51,7 +51,9 @@
       "@bundled-es-modules/glob",
       "esbuild",
       "msw",
-      "style-dictionary"
+      "sharp",
+      "style-dictionary",
+      "unrs-resolver"
     ]
   }
 }
