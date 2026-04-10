@@ -4,9 +4,14 @@ export default {
   platforms: {
     css: {
       transformGroup: 'css',
-      prefix: 'banxe',
       buildPath: 'build/css/',
-      files: [{ destination: 'variables.css', format: 'css/variables' }],
+      files: [
+        {
+          destination: 'tokens.css',
+          format: 'css/variables',
+          options: { outputReferences: false },
+        },
+      ],
     },
     js: {
       transformGroup: 'js',

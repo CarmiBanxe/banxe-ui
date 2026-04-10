@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-navy: #0D1B2A;
+    --color-blue: #2563EB;
+    --color-gold: #F59E0B;
+    --color-surface: #1B2838;
+    --color-surface-hover: #243447;
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #94A3B8;
+    --color-success: #10B981;
+    --color-error: #EF4444;
+    --color-border: #334155;
+    --font-ui: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background-color: var(--color-navy);
+    color: var(--color-text-primary);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .banxe-card {
+    @apply rounded-xl p-6;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .banxe-card:hover {
+    background-color: var(--color-surface-hover);
+  }
+  .banxe-amount {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  .banxe-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .skeleton {
+    @apply animate-pulse rounded-lg;
+    background-color: var(--color-surface-hover);
+  }
+}

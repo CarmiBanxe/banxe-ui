@@ -3,17 +3,11 @@ import { Tabs } from 'expo-router'
 import { Text } from 'react-native'
 
 /**
- * BANXE Mobile Tab Navigator
- * M-01..M-06 — bottom tab navigation per BANXE-SCREEN-INVENTORY.md
+ * BANXE Mobile Tab Navigator — light theme
+ * Brand: Primary #1A2B6B | Accent #00C6AE | Background #F5F7FA
+ * Active tabs: Home, Send (transfers), History (transactions), Settings
+ * Hidden tabs (legacy, accessible via router.push): wallets, assistant, profile, send
  */
-
-function TabIcon({ symbol, label }: { symbol: string; label: string }) {
-  return (
-    <Text style={{ fontSize: 20 }} accessibilityLabel={label}>
-      {symbol}
-    </Text>
-  )
-}
 
 export default function TabLayout() {
   return (
@@ -21,68 +15,63 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0F1520',
-          borderTopColor: '#1F2D3D',
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E4E8F0',
           borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
         },
-        tabBarActiveTintColor: '#1A7FD4',
-        tabBarInactiveTintColor: '#8DA0B5',
+        tabBarActiveTintColor: '#1A2B6B',
+        tabBarInactiveTintColor: '#9DAABF',
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '500',
+        },
       }}
     >
+      {/* Active tabs */}
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>⌂</Text>
+            <Text style={{ fontSize: 20, color }} accessibilityLabel="Home">⌂</Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="transfers"
+        options={{
+          title: 'Send',
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }} accessibilityLabel="Send money">↑</Text>
           ),
         }}
       />
       <Tabs.Screen
         name="transactions"
         options={{
-          title: 'Transactions',
+          title: 'History',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>≡</Text>
+            <Text style={{ fontSize: 20, color }} accessibilityLabel="Transaction history">≡</Text>
           ),
         }}
       />
       <Tabs.Screen
-        name="wallets"
+        name="settings"
         options={{
-          title: 'Wallets',
+          title: 'Settings',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>◈</Text>
+            <Text style={{ fontSize: 20, color }} accessibilityLabel="Settings">◎</Text>
           ),
         }}
       />
-      <Tabs.Screen
-        name="send"
-        options={{
-          title: 'Send',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>↑</Text>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="assistant"
-        options={{
-          title: 'AI',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>✦</Text>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>◎</Text>
-          ),
-        }}
-      />
+
+      {/* Hidden legacy screens — accessible via router.push, not shown in tab bar */}
+      <Tabs.Screen name="send"      options={{ href: null }} />
+      <Tabs.Screen name="wallets"   options={{ href: null }} />
+      <Tabs.Screen name="profile"   options={{ href: null }} />
+      <Tabs.Screen name="assistant" options={{ href: null }} />
     </Tabs>
   )
 }

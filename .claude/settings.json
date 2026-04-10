@@ -12,6 +12,10 @@
           {
             "type": "command",
             "command": "bash $HOME/developer/.claude/hooks/banxe-ui-session-start.sh"
+          },
+          {
+            "type": "command",
+            "command": "claude mcp list 2>/dev/null | head -5 || echo 'No MCPs — run /setup-mcp'"
           }
         ]
       }

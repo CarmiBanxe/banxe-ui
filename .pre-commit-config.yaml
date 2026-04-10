@@ -15,7 +15,7 @@ repos:
 
       - id: eslint
         name: ESLint
-        entry: bash -c "cd /home/mmber/banxe-ui && npx eslint packages/ui/src apps/web/src --ext .ts,.tsx --max-warnings 0"
+        entry: bash -c "cd /home/mmber/banxe-ui && npx eslint packages/ui/src apps/web-vite/src --ext .ts,.tsx --max-warnings 0"
         language: system
         pass_filenames: false
         always_run: true
@@ -29,7 +29,7 @@ repos:
 
       - id: semgrep-ui
         name: Semgrep UI rules
-        entry: bash -c "cd /home/mmber/banxe-ui && semgrep --config .semgrep/banxe-ui-rules.yaml apps/web/src packages/ui/src --error --quiet"
+        entry: bash -c "cd /home/mmber/banxe-ui && semgrep --config .semgrep/banxe-ui-rules.yaml apps/web-vite/src packages/ui/src --error --quiet"
         language: system
         pass_filenames: false
         always_run: true

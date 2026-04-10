@@ -10,3 +10,6 @@ apps/mobile/.expo/
 packages/ui/dist/
 packages/ui/tsconfig.tsbuildinfo
 node_modules/
+
+# Coverage reports
+coverage/

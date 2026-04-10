@@ -1,0 +1,7 @@
+packages:
+  - 'packages/*'
+  - 'apps/web-vite'
+  - 'apps/web-next'
+  - 'apps/mobile'
+  - 'mocks'
+  - 'storybook'

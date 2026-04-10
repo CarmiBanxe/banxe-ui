@@ -4,6 +4,7 @@ interface AmountInputProps {
   currency: string
   value: string
   onChange: (value: string) => void
+  onCurrencyChange?: (currency: string) => void
   available?: string
   label?: string
   disabled?: boolean
