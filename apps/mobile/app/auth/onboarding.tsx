@@ -131,7 +131,7 @@ export default function OnboardingScreen() {
       setCurrentIndex(nextIndex)
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-      router.replace('/auth/login')
+      router.replace('/(tabs)')
     }
   }
 
@@ -192,7 +192,7 @@ export default function OnboardingScreen() {
 
         {currentIndex === 0 && (
           <TouchableOpacity
-            onPress={() => router.replace('/auth/login')}
+            onPress={() => router.replace('/(tabs)')}
             className="mt-3 items-center py-2"
             accessibilityRole="button"
             accessibilityLabel="Skip onboarding"

@@ -3,8 +3,21 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "types": ["nativewind/types"]
+    "types": [
+      "nativewind/types"
+    ]
   },
-  "include": ["app/**/*", "src/**/*", "components/**/*", "global.css"],
-  "exclude": ["node_modules", "App.tsx"]
+  "include": [
+    "app/**/*",
+    "src/**/*",
+    "components/**/*",
+    "global.css",
+    "nativewind-env.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "App.tsx"
+  ]
 }

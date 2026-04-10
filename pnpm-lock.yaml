@@ -81,6 +81,9 @@ importers:
       '@banxe/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@banxe/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@gluestack-style/react':
         specifier: ^1.0.57
         version: 1.0.57
@@ -148,6 +151,9 @@ importers:
       '@banxe/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@banxe/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

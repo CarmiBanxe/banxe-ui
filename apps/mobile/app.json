@@ -30,7 +30,6 @@
       "expo-router",
       "expo-local-authentication",
       "expo-secure-store",
-      "expo-haptics",
       [
         "expo-image-picker",
         { "photosPermission": "BANXE needs access to your photos for KYC document upload" }

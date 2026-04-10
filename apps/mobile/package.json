@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@banxe/design-tokens": "workspace:*",
+    "@banxe/shared": "workspace:*",
     "@gluestack-style/react": "^1.0.57",
     "@gluestack-ui/themed": "^1.1.66",
     "expo": "~53.0.0",

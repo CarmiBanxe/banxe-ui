@@ -1,50 +1,49 @@
+/**
+ * Dashboard — Server Component
+ * Fetches real data from banxe-emi-stack via /v1/accounts + /v1/transactions.
+ * Falls back to mock data when backend is unreachable (dev without backend running).
+ * I-05: all monetary amounts remain as strings — never parsed as float.
+ */
+
+import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { ArrowUpRight, ArrowDownLeft, CreditCard, RefreshCw, type LucideIcon } from "lucide-react"
+import { getServerApi } from "@/lib/api"
+import { ApiError } from "@banxe/shared/api"
+import type { Account, Transaction } from "@banxe/shared/types"
 
-// ── Skeleton component ───────────────────────────────────────────────────────
+// ── Fallback mock data (used when backend is unreachable) ─────────────────────
 
-function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={`animate-pulse rounded-[--radius-md] bg-[--color-bg-elevated] ${className ?? ""}`}
-      aria-hidden="true"
-    />
-  )
+const MOCK_ACCOUNT: Account = {
+  id: "acc-mock-001",
+  customer_id: "cust-mock-001",
+  currency: "GBP",
+  balance: "4700.00",
+  status: "ACTIVE",
+  iban: "GB29****1234",
+  created_at: "2026-01-01T00:00:00Z",
 }
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface Transaction {
-  id: string
-  date: string
-  description: string
-  amount: string    // Decimal string — I-05: never float
-  direction: "credit" | "debit"
-  status: "COMPLETED" | "PENDING" | "BLOCKED"
-}
-
-// ── Mock data (replace with API call) ────────────────────────────────────────
 
 const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: "tx-001", date: "2026-04-10", description: "Salary credit", amount: "3000.00", direction: "credit", status: "COMPLETED" },
-  { id: "tx-002", date: "2026-04-09", description: "Rent payment", amount: "1200.00", direction: "debit", status: "COMPLETED" },
-  { id: "tx-003", date: "2026-04-08", description: "Grocery store", amount: "87.45", direction: "debit", status: "COMPLETED" },
-  { id: "tx-004", date: "2026-04-07", description: "Transfer to savings", amount: "500.00", direction: "debit", status: "PENDING" },
-  { id: "tx-005", date: "2026-04-06", description: "Interest payment", amount: "12.30", direction: "credit", status: "COMPLETED" },
+  { id: "tx-001", account_id: "acc-mock-001", date: "2026-04-10", description: "Salary credit", reference: "SALARY-APR", debit: null, credit: "3000.00", balance_after: "4700.00", status: "COMPLETED", direction: "credit" },
+  { id: "tx-002", account_id: "acc-mock-001", date: "2026-04-09", description: "Rent payment", reference: "RENT-APR", debit: "1200.00", credit: null, balance_after: "1700.00", status: "COMPLETED", direction: "debit" },
+  { id: "tx-003", account_id: "acc-mock-001", date: "2026-04-08", description: "Grocery store", reference: "POS-REF-001", debit: "87.45", credit: null, balance_after: "2900.00", status: "COMPLETED", direction: "debit" },
+  { id: "tx-004", account_id: "acc-mock-001", date: "2026-04-07", description: "Transfer to savings", reference: "INT-XFER-001", debit: "500.00", credit: null, balance_after: "2987.45", status: "PENDING", direction: "debit" },
+  { id: "tx-005", account_id: "acc-mock-001", date: "2026-04-06", description: "Interest payment", reference: "INT-APR", debit: null, credit: "12.30", balance_after: "3487.45", status: "COMPLETED", direction: "credit" },
 ]
 
-// ── Status badge ─────────────────────────────────────────────────────────────
+// ── Subcomponents ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: Transaction["status"] }) {
-  const classes = {
+  const classes: Record<string, string> = {
     COMPLETED: "bg-[--color-success-subtle] text-[--color-success]",
     PENDING:   "bg-[--color-warning-subtle] text-[--color-warning]",
     BLOCKED:   "bg-[--color-error-subtle]   text-[--color-error]",
+    FAILED:    "bg-[--color-error-subtle]   text-[--color-error]",
   }
   return (
     <span
-      className={`inline-flex rounded-[--radius-pill] px-2 py-0.5 text-xs font-medium ${classes[status]}`}
+      className={`inline-flex rounded-[--radius-pill] px-2 py-0.5 text-xs font-medium ${classes[status] ?? ""}`}
       aria-label={`Status: ${status.toLowerCase()}`}
     >
       {status}
@@ -52,17 +51,7 @@ function StatusBadge({ status }: { status: Transaction["status"] }) {
   )
 }
 
-// ── Quick action button ───────────────────────────────────────────────────────
-
-function QuickAction({
-  icon: Icon,
-  label,
-  href,
-}: {
-  icon: LucideIcon
-  label: string
-  href: string
-}) {
+function QuickAction({ icon: Icon, label, href }: { icon: LucideIcon; label: string; href: string }) {
   return (
     <a
       href={href}
@@ -75,13 +64,58 @@ function QuickAction({
   )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+function DataSourceBadge({ isMock }: { isMock: boolean }) {
+  if (!isMock) return null
+  return (
+    <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs bg-[--color-warning-subtle] text-[--color-warning]">
+      ⚠ Mock data — backend offline
+    </span>
+  )
+}
 
-export default function DashboardPage() {
-  // TODO: replace with server component data fetch from /v1/ledger/accounts/{id}/balance
-  const balance = "6300.00"
-  const currency = "GBP"
-  const isLoading = false
+// ── Page (Server Component) ───────────────────────────────────────────────────
+
+export default async function DashboardPage() {
+  let account: Account = MOCK_ACCOUNT
+  let transactions: Transaction[] = MOCK_TRANSACTIONS
+  let isMock = true
+  let backendError: string | null = null
+
+  try {
+    const api = await getServerApi()
+
+    // Fetch accounts list — take first active account
+    const accounts = await api.accounts.list()
+    const primaryAccount = accounts.find((a) => a.status === "ACTIVE") ?? accounts[0]
+
+    if (primaryAccount) {
+      account = primaryAccount
+
+      // Fetch recent transactions for this account
+      const txList = await api.transactions.list({
+        account_id: primaryAccount.id,
+        limit: 10,
+      })
+      transactions = txList
+      isMock = false
+    }
+  } catch (err) {
+    if (err instanceof ApiError) {
+      if (err.status === 401) {
+        redirect("/auth/login")
+      }
+      backendError = `API error ${err.status}: ${err.message}`
+    } else {
+      // Network error (backend not running) — use mock data silently in dev
+      backendError = process.env.NODE_ENV === "development"
+        ? "Backend unreachable — using mock data"
+        : null
+    }
+  }
+
+  const balance = account.balance
+  const currency = account.currency
+  const currencySymbol = currency === "GBP" ? "£" : currency === "EUR" ? "€" : currency === "USD" ? "$" : currency
 
   return (
     <main className="min-h-screen bg-[--color-bg-page]" aria-label="Dashboard">
@@ -94,13 +128,23 @@ export default function DashboardPage() {
             </div>
             <span className="font-semibold text-[--color-primary]">BANXE</span>
           </div>
-          <nav aria-label="Main navigation">
-            <a href="/settings" className="text-sm text-[--color-text-secondary] hover:text-[--color-text-primary]" aria-label="Go to settings">
-              Settings
-            </a>
-          </nav>
+          <div className="flex items-center gap-4">
+            <DataSourceBadge isMock={isMock} />
+            <nav aria-label="Main navigation">
+              <a href="/settings" className="text-sm text-[--color-text-secondary] hover:text-[--color-text-primary]" aria-label="Go to settings">
+                Settings
+              </a>
+            </nav>
+          </div>
         </div>
       </header>
+
+      {/* Backend error banner (dev only) */}
+      {backendError && process.env.NODE_ENV === "development" && (
+        <div role="alert" className="bg-[--color-warning-subtle] border-b border-[--color-warning] px-4 py-2 text-xs text-[--color-warning] text-center">
+          {backendError}
+        </div>
+      )}
 
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 space-y-6">
 
@@ -108,19 +152,21 @@ export default function DashboardPage() {
         <Card aria-label="Account balance">
           <CardContent className="pt-6">
             <p className="text-sm text-[--color-text-secondary]">Available balance</p>
-            {isLoading ? (
-              <Skeleton className="h-10 w-48 mt-1" />
-            ) : (
-              <p
-                className="text-4xl font-bold text-[--color-primary] mt-1 tabular-nums"
-                aria-label={`${currency} ${balance}`}
-              >
-                {currency} {balance}
-              </p>
-            )}
+            {/* I-05: balance is a Decimal string from API — display directly, never parseFloat */}
+            <p
+              className="text-4xl font-bold text-[--color-primary] mt-1 tabular-nums"
+              aria-label={`${currency} ${balance}`}
+            >
+              {currencySymbol}{balance}
+            </p>
             <p className="text-xs text-[--color-text-secondary] mt-1">
               FCA CASS 7.15 safeguarded — as of {new Date().toLocaleDateString("en-GB")}
             </p>
+            {account.iban && (
+              <p className="text-xs text-[--color-text-tertiary] mt-0.5 font-mono">
+                IBAN: {account.iban}
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -133,7 +179,7 @@ export default function DashboardPage() {
             <QuickAction icon={ArrowUpRight} label="Send money" href="/transfers" />
             <QuickAction icon={ArrowDownLeft} label="Request" href="/transfers/request" />
             <QuickAction icon={CreditCard} label="Cards" href="/cards" />
-            <QuickAction icon={RefreshCw} label="Statement" href="/statement" />
+            <QuickAction icon={RefreshCw} label="Statement" href={`/statement?account=${account.id}`} />
           </div>
         </section>
 
@@ -148,22 +194,13 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <ul className="space-y-4" aria-busy="true" aria-label="Loading transactions">
-                {[1, 2, 3].map((i) => (
-                  <li key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-9 w-9 rounded-full" />
-                    <div className="flex-1 space-y-1.5">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                    <Skeleton className="h-4 w-20" />
-                  </li>
-                ))}
-              </ul>
+            {transactions.length === 0 ? (
+              <p className="text-sm text-[--color-text-secondary] text-center py-8">
+                No transactions yet
+              </p>
             ) : (
               <ul className="divide-y divide-[--color-border-subtle]" aria-label="Recent transactions">
-                {MOCK_TRANSACTIONS.map((tx) => (
+                {transactions.map((tx) => (
                   <li key={tx.id} className="flex items-center gap-3 py-3">
                     {/* Direction indicator */}
                     <div
@@ -192,14 +229,14 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Amount — I-05: display as string, never parse as float */}
+                    {/* Amount — I-05: display as Decimal string, never parse as float */}
                     <p
                       className={`text-sm font-semibold tabular-nums ${
                         tx.direction === "credit" ? "text-[--color-success]" : "text-[--color-text-primary]"
                       }`}
-                      aria-label={`${tx.direction === "credit" ? "+" : "-"}£${tx.amount}`}
+                      aria-label={`${tx.direction === "credit" ? "+" : "-"}${currencySymbol}${tx.credit ?? tx.debit}`}
                     >
-                      {tx.direction === "credit" ? "+" : "−"}£{tx.amount}
+                      {tx.direction === "credit" ? "+" : "−"}{currencySymbol}{tx.credit ?? tx.debit}
                     </p>
                   </li>
                 ))}

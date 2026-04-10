@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@banxe/design-tokens": "workspace:*",
+    "@banxe/shared": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^0.368.0",
     "next": "16.2.3",
