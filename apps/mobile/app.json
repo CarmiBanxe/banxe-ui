@@ -4,16 +4,40 @@
     "slug": "banxe-mobile",
     "scheme": "banxe",
     "version": "0.1.0",
+    "sdkVersion": "53.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0D1B2A"
+      "backgroundColor": "#F5F7FA"
     },
-    "ios": { "bundleIdentifier": "com.banxe.mobile", "supportsTablet": false },
-    "android": { "package": "com.banxe.mobile", "adaptiveIcon": { "backgroundColor": "#0D1B2A" } },
-    "plugins": ["expo-router", "expo-local-authentication", "expo-secure-store"]
+    "ios": {
+      "bundleIdentifier": "com.banxe.mobile",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "BANXE uses Face ID for secure authentication (PSD2 SCA)"
+      }
+    },
+    "android": {
+      "package": "com.banxe.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-local-authentication",
+      "expo-secure-store",
+      "expo-haptics",
+      [
+        "expo-image-picker",
+        { "photosPermission": "BANXE needs access to your photos for KYC document upload" }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
