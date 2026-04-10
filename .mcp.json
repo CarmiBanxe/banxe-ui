@@ -3,23 +3,33 @@
     "context7": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"],
-      "description": "Актуальная документация React/Tailwind/Expo/RN — добавь 'use context7' к промпту"
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
     },
     "figma": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@figma/mcp-server"],
+      "args": [
+        "-y",
+        "@figma/mcp-server"
+      ],
       "env": {
         "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}"
-      },
-      "description": "Semantic Figma reading — цветовые токены, компоненты, Auto Layout"
+      }
     },
     "storybook": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@chromatic/mcp-server"],
-      "description": "BANXE компоненты как живой контекст — Claude Code видит реальный @banxe/ui"
+      "args": [
+        "-y",
+        "@chromatic/mcp-server"
+      ]
+    },
+    "expo-mcp": {
+      "type": "http",
+      "url": "https://mcp.expo.dev/mcp"
     }
   }
 }
