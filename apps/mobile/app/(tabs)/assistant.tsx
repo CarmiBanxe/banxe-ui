@@ -33,7 +33,7 @@ interface Message {
 }
 
 const SUGGESTIONS = [
-  'What's my balance?',
+  "What's my balance?",
   'Any unusual activity?',
   'How to make SEPA payment?',
 ]

@@ -4,196 +4,230 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   FlatList,
+  ListRenderItemInfo,
 } from 'react-native'
-import wallets from '../../../../mocks/data/wallets.json'
-import transactions from '../../../../mocks/data/transactions.json'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { router } from 'expo-router'
+import walletsData from '../../../../mocks/data/wallets.json'
+import transactionsData from '../../../../mocks/data/transactions.json'
 
 /**
- * Mobile Dashboard — M-01
- *
- * Differences from W-01:
- * - Bottom tab navigation (no sidebar)
- * - Horizontal swipe wallet cards
- * - Quick actions: 4-icon grid (Send | Add | Exchange | More)
- * - AI insight: compact strip
- * - Recent transactions: 5 items, "See all" link
- *
- * Per BANXE-SCREEN-INVENTORY.md M-01 spec.
+ * BANXE Mobile Dashboard — M-01
+ * Light theme + NativeWind
+ * I-05: amounts displayed as strings, never parsed as float
  */
 
+interface Wallet {
+  id: string
+  currency: string
+  available: string  // Decimal string — I-05
+  pending: string    // Decimal string — I-05
+  status: string
+}
+
+interface Transaction {
+  id: string
+  counterparty: string
+  reference: string
+  amount: string     // Decimal string — I-05
+  currency: string
+  direction: 'IN' | 'OUT'
+  status: string
+  date: string
+}
+
+const wallets = walletsData as Wallet[]
+const transactions = transactionsData as Transaction[]
+
 const QUICK_ACTIONS = [
-  { label: 'Send', icon: '↑', href: '/send' },
-  { label: 'Add', icon: '+', href: '/wallets' },
-  { label: 'Exchange', icon: '⇄', href: '/wallets' },
-  { label: 'More', icon: '•••', href: '/profile' },
+  { label: 'Send', icon: '↑', route: '/transfers' as const },
+  { label: 'Request', icon: '↓', route: '/(tabs)/transactions' as const },
+  { label: 'History', icon: '≡', route: '/(tabs)/transactions' as const },
+  { label: 'KYC', icon: '✓', route: '/kyc/index' as const },
 ] as const
 
 const STATUS_COLOR: Record<string, string> = {
-  COMPLETED: '#22C55E',
-  PENDING: '#F59E0B',
-  FAILED: '#EF4444',
-  BLOCKED: '#EF4444',
-  REVIEW: '#F59E0B',
+  COMPLETED: '#38A169',
+  PENDING: '#D69E2E',
+  FAILED: '#E53E3E',
+  BLOCKED: '#E53E3E',
+  REVIEW: '#D69E2E',
 }
 
-export default function MobileDashboard() {
-  const primaryWallet = wallets[0]
-  const recentTransactions = transactions.slice(0, 5)
+// ── Wallet card ────────────────────────────────────────────────────────────────
 
+function WalletCard({ wallet }: { wallet: Wallet }) {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-
-      {/* ── Header ── */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Good morning</Text>
-          <Text style={styles.name}>Moriel</Text>
-        </View>
-        <View style={styles.notifBadge}>
-          <Text style={styles.notifIcon}>🔔</Text>
+    <View
+      className="w-56 bg-primary rounded-xl p-4 mr-3"
+      accessibilityLabel={`${wallet.currency} wallet, ${wallet.available} available`}
+    >
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-white font-bold text-base">{wallet.currency}</Text>
+        <View className="bg-white/20 rounded px-2 py-0.5">
+          <Text className="text-white text-xs font-semibold">{wallet.status}</Text>
         </View>
       </View>
-
-      {/* ── Wallet cards (horizontal scroll) ── */}
-      <FlatList
-        data={wallets}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.walletList}
-        renderItem={({ item: wallet }) => (
-          <View
-            style={styles.walletCard}
-            accessibilityLabel={`${wallet.currency} wallet, ${wallet.available} available`}
-          >
-            <View style={styles.walletCardHeader}>
-              <Text style={styles.walletCurrency}>{wallet.currency}</Text>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>{wallet.status}</Text>
-              </View>
-            </View>
-            <Text style={styles.walletBalance}>{wallet.available}</Text>
-            <Text style={styles.walletLabel}>Available</Text>
-            {wallet.pending !== '0.00' && (
-              <Text style={styles.pendingAmount}>{wallet.pending} pending</Text>
-            )}
-          </View>
-        )}
-      />
-
-      {/* ── Quick actions ── */}
-      <View
-        style={styles.quickActions}
-        accessibilityRole="toolbar"
-        accessibilityLabel="Quick actions"
-      >
-        {QUICK_ACTIONS.map(({ label, icon }) => (
-          <TouchableOpacity
-            key={label}
-            style={styles.quickAction}
-            accessibilityLabel={label}
-            accessibilityRole="button"
-          >
-            <Text style={styles.quickActionIcon}>{icon}</Text>
-            <Text style={styles.quickActionLabel}>{label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* ── AI insight strip ── */}
-      <View style={styles.aiStrip} accessibilityLabel="AI insight">
-        <View style={styles.aiBadge}>
-          <Text style={styles.aiBadgeText}>✦ AI</Text>
-        </View>
-        <Text style={styles.aiText} numberOfLines={2}>
-          FX spending up 34% this month vs. your 3-month average.
+      <Text className="text-white text-2xl font-bold font-mono">
+        {wallet.available}
+      </Text>
+      <Text className="text-white/70 text-xs mt-0.5">Available</Text>
+      {wallet.pending !== '0.00' && (
+        <Text className="text-yellow-200 text-xs mt-2">
+          {wallet.pending} pending
         </Text>
-        <TouchableOpacity accessibilityLabel="View AI insight details">
-          <Text style={styles.aiAction}>›</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* ── Recent transactions ── */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent transactions</Text>
-          <TouchableOpacity accessibilityLabel="See all transactions">
-            <Text style={styles.seeAll}>See all</Text>
-          </TouchableOpacity>
-        </View>
-        {recentTransactions.map((tx) => (
-          <View
-            key={tx.id}
-            style={styles.txRow}
-            accessibilityLabel={`${tx.counterparty}, ${tx.direction === 'IN' ? 'received' : 'sent'} ${tx.amount} ${tx.currency}, ${tx.status}`}
-          >
-            <View style={styles.txLeft}>
-              <View style={[styles.txDirection, { backgroundColor: tx.direction === 'IN' ? '#0F2B1A' : '#2B0F0F' }]}>
-                <Text style={{ color: tx.direction === 'IN' ? '#22C55E' : '#EF4444', fontSize: 12 }}>
-                  {tx.direction === 'IN' ? '↓' : '↑'}
-                </Text>
-              </View>
-              <View>
-                <Text style={styles.txCounterparty} numberOfLines={1}>{tx.counterparty}</Text>
-                <Text style={styles.txRef} numberOfLines={1}>{tx.reference}</Text>
-              </View>
-            </View>
-            <View style={styles.txRight}>
-              <Text style={[styles.txAmount, { color: tx.direction === 'IN' ? '#22C55E' : '#E8EDF5' }]}>
-                {tx.direction === 'IN' ? '+' : '-'}{tx.amount} {tx.currency}
-              </Text>
-              <View style={styles.txStatusBadge}>
-                <Text style={[styles.txStatus, { color: STATUS_COLOR[tx.status] ?? '#8DA0B5' }]}>
-                  {tx.status}
-                </Text>
-              </View>
-            </View>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+      )}
+    </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#080C14' },
-  content: { paddingBottom: 32 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16 },
-  greeting: { fontSize: 13, color: '#8DA0B5' },
-  name: { fontSize: 22, fontWeight: '700', color: '#E8EDF5' },
-  notifBadge: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#0F1520', alignItems: 'center', justifyContent: 'center' },
-  notifIcon: { fontSize: 18 },
-  walletList: { paddingHorizontal: 20, paddingBottom: 8, gap: 12 },
-  walletCard: { width: 220, backgroundColor: '#0F1520', borderRadius: 16, padding: 18, borderWidth: 1, borderColor: '#1F2D3D' },
-  walletCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  walletCurrency: { fontSize: 15, fontWeight: '700', color: '#E8EDF5' },
-  statusBadge: { backgroundColor: '#0F2B1A', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
-  statusText: { fontSize: 10, color: '#22C55E', fontWeight: '600' },
-  walletBalance: { fontSize: 26, fontWeight: '700', color: '#E8EDF5', fontFamily: 'monospace' },
-  walletLabel: { fontSize: 12, color: '#8DA0B5', marginTop: 2 },
-  pendingAmount: { fontSize: 11, color: '#F59E0B', marginTop: 6 },
-  quickActions: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 16, backgroundColor: '#0F1520', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#1F2D3D' },
-  quickAction: { alignItems: 'center', flex: 1 },
-  quickActionIcon: { fontSize: 22, marginBottom: 4, color: '#E8EDF5' },
-  quickActionLabel: { fontSize: 12, color: '#8DA0B5' },
-  aiStrip: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginTop: 12, backgroundColor: '#1A0F2B', borderRadius: 12, padding: 12, gap: 8, borderWidth: 1, borderColor: '#2A1A45' },
-  aiBadge: { backgroundColor: '#2A1A45', borderRadius: 4, paddingHorizontal: 5, paddingVertical: 2 },
-  aiBadgeText: { fontSize: 10, color: '#7C3AED', fontWeight: '700' },
-  aiText: { flex: 1, fontSize: 12, color: '#8DA0B5' },
-  aiAction: { fontSize: 18, color: '#7C3AED' },
-  section: { marginHorizontal: 20, marginTop: 20 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#E8EDF5' },
-  seeAll: { fontSize: 13, color: '#1A7FD4' },
-  txRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#1F2D3D' },
-  txLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  txDirection: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  txCounterparty: { fontSize: 13, fontWeight: '600', color: '#E8EDF5', maxWidth: 160 },
-  txRef: { fontSize: 11, color: '#8DA0B5', maxWidth: 160 },
-  txRight: { alignItems: 'flex-end' },
-  txAmount: { fontSize: 13, fontWeight: '700', fontFamily: 'monospace' },
-  txStatusBadge: {},
-  txStatus: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase', marginTop: 2 },
-})
+// ── Transaction row ────────────────────────────────────────────────────────────
+
+function TransactionRow({ tx }: { tx: Transaction }) {
+  const isIn = tx.direction === 'IN'
+  return (
+    <View
+      className="flex-row items-center py-3 border-b border-border-subtle"
+      accessibilityLabel={`${tx.counterparty}, ${isIn ? 'received' : 'sent'} ${tx.currency} ${tx.amount}, ${tx.status}`}
+    >
+      {/* Direction badge */}
+      <View
+        className={`w-9 h-9 rounded-full items-center justify-center mr-3 ${
+          isIn ? 'bg-success-subtle' : 'bg-error-subtle'
+        }`}
+        accessible={false}
+      >
+        <Text style={{ color: isIn ? '#38A169' : '#E53E3E', fontSize: 14 }}>
+          {isIn ? '↓' : '↑'}
+        </Text>
+      </View>
+
+      {/* Counterparty + reference */}
+      <View className="flex-1 min-w-0">
+        <Text
+          className="text-text-primary text-sm font-semibold"
+          numberOfLines={1}
+        >
+          {tx.counterparty}
+        </Text>
+        <Text className="text-text-secondary text-xs" numberOfLines={1}>
+          {tx.reference}
+        </Text>
+      </View>
+
+      {/* Amount + status */}
+      <View className="items-end">
+        <Text
+          className="text-sm font-bold font-mono"
+          style={{ color: isIn ? '#38A169' : '#1A1A2E' }}
+        >
+          {isIn ? '+' : '−'}{tx.currency} {tx.amount}
+        </Text>
+        <Text
+          className="text-xs font-semibold mt-0.5"
+          style={{ color: STATUS_COLOR[tx.status] ?? '#718096' }}
+        >
+          {tx.status}
+        </Text>
+      </View>
+    </View>
+  )
+}
+
+// ── Dashboard screen ───────────────────────────────────────────────────────────
+
+export default function DashboardScreen() {
+  const recentTxs = transactions.slice(0, 5) as Transaction[]
+
+  return (
+    <SafeAreaView className="flex-1 bg-bg-page">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View className="flex-row justify-between items-center px-5 pt-4 pb-3">
+          <View>
+            <Text className="text-text-secondary text-sm">Good morning</Text>
+            <Text className="text-text-primary text-xl font-bold">BANXE</Text>
+          </View>
+          <TouchableOpacity
+            className="w-9 h-9 rounded-full bg-bg-surface border border-border-subtle items-center justify-center"
+            accessibilityLabel="Notifications"
+            accessibilityRole="button"
+          >
+            <Text style={{ fontSize: 18 }}>🔔</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Wallet cards */}
+        <FlatList
+          data={wallets}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(w) => w.id}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 8 }}
+          renderItem={({ item }: ListRenderItemInfo<Wallet>) => (
+            <WalletCard wallet={item} />
+          )}
+        />
+
+        {/* Quick actions */}
+        <View
+          className="mx-5 mt-4 bg-bg-surface border border-border-subtle rounded-xl p-4"
+          accessibilityRole="toolbar"
+          accessibilityLabel="Quick actions"
+        >
+          <View className="flex-row justify-between">
+            {QUICK_ACTIONS.map(({ label, icon, route }) => (
+              <TouchableOpacity
+                key={label}
+                className="items-center flex-1"
+                onPress={() => router.push(route)}
+                accessibilityLabel={label}
+                accessibilityRole="button"
+              >
+                <View className="w-11 h-11 rounded-full bg-primary-subtle items-center justify-center mb-1.5">
+                  <Text style={{ fontSize: 20, color: '#1A2B6B' }}>{icon}</Text>
+                </View>
+                <Text className="text-text-secondary text-xs font-medium">{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* AI Insight strip */}
+        <View className="mx-5 mt-3 bg-[#F5F0FF] border border-[#E9D8FD] rounded-xl p-3 flex-row items-center gap-2">
+          <View className="bg-[#EDE0FF] rounded px-1.5 py-0.5">
+            <Text style={{ color: '#7C3AED', fontSize: 10, fontWeight: '700' }}>✦ AI</Text>
+          </View>
+          <Text className="flex-1 text-xs text-text-secondary" numberOfLines={2}>
+            FX spending up 34% this month vs. your 3-month average.
+          </Text>
+          <Text style={{ color: '#7C3AED', fontSize: 18 }}>›</Text>
+        </View>
+
+        {/* Recent transactions */}
+        <View className="mx-5 mt-4">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-text-primary text-base font-bold">Recent transactions</Text>
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/transactions')}
+              accessibilityLabel="See all transactions"
+            >
+              <Text className="text-primary text-sm">See all</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className="bg-bg-surface border border-border-subtle rounded-xl px-4">
+            {recentTxs.map((tx) => (
+              <TransactionRow key={tx.id} tx={tx} />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  )
+}
