@@ -23,5 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../packages/ui/src", "../../mocks"]
+  "include": ["src", "../../packages/ui/src", "../../mocks"],
+  "compileOnSave": false
 }

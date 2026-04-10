@@ -1,0 +1,9 @@
+{
+  "name": "@banxe/mocks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "msw": "^2.2.0"
+  }
+}

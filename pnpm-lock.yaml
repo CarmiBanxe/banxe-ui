@@ -241,6 +241,12 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@25.6.0)(lightningcss@1.32.0)(terser@5.46.1)
 
+  mocks:
+    dependencies:
+      msw:
+        specifier: ^2.2.0
+        version: 2.13.2(@types/node@25.6.0)(typescript@5.9.3)
+
   packages/design-tokens:
     devDependencies:
       style-dictionary:
