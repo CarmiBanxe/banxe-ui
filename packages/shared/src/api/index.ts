@@ -1,6 +1,6 @@
-export { createApiClient, ApiError } from "./client.js"
-export type { ApiClientConfig, BanxeApiClient } from "./client.js"
-export { createBanxeApi } from "./endpoints.js"
+export { createApiClient, ApiError } from "./client"
+export type { ApiClientConfig, BanxeApiClient } from "./client"
+export { createBanxeApi } from "./endpoints"
 export type {
   BanxeApi,
   LedgerAccount,
@@ -14,4 +14,4 @@ export type {
   CustomerResponse,
   CustomerListResponse,
   KycWorkflow,
-} from "./endpoints.js"
+} from "./endpoints"

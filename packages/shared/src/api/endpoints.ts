@@ -17,7 +17,7 @@
  * I-05: all monetary amounts are Decimal strings — never number.
  */
 
-import type { BanxeApiClient } from "./client.js"
+import type { BanxeApiClient } from "./client"
 
 // ── Response types matching banxe-emi-stack Pydantic schemas ─────────────────
 

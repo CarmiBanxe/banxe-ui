@@ -1,3 +1,3 @@
-export * from "./types/index.js"
-export * from "./api/index.js"
-export * from "./hooks/index.js"
+export * from "./types/index"
+export * from "./api/index"
+export * from "./hooks/index"

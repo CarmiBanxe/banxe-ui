@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["@banxe/shared", "@banxe/design-tokens"],
 };
 
 export default nextConfig;

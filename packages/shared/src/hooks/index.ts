@@ -1,2 +1,2 @@
-export { useSessionTimeout } from "./useSessionTimeout.js"
-export type { SessionTimeoutOptions, SessionTimeoutResult } from "./useSessionTimeout.js"
+export { useSessionTimeout } from "./useSessionTimeout"
+export type { SessionTimeoutOptions, SessionTimeoutResult } from "./useSessionTimeout"
