@@ -47,8 +47,13 @@ export default function MobileSend() {
   const [pinError, setPinError] = useState('')
   const [reference, setReference] = useState('')
 
-  const numAmount = parseFloat(amount || '0')
-  const requiresPin = numAmount > 30
+  // I-05: never use parseFloat/Number on monetary amounts.
+  // Compare as integer part of Decimal string to avoid IEEE 754 precision loss.
+  const requiresPin = (() => {
+    if (!amount) return false
+    const [intPart] = amount.split('.')
+    return parseInt(intPart ?? '0', 10) >= 30
+  })()
 
   const filteredBeneficiaries = MOCK_BENEFICIARIES.filter(
     (b) =>
@@ -175,8 +180,8 @@ export default function MobileSend() {
           </View>
 
           <TouchableOpacity
-            style={[styles.primaryBtn, (!amount || numAmount <= 0) && styles.primaryBtnDisabled]}
-            disabled={!amount || numAmount <= 0}
+            style={[styles.primaryBtn, (!amount || amount === '' || amount === '0') && styles.primaryBtnDisabled]}
+            disabled={!amount || amount === '' || amount === '0'}
             onPress={() => setStep('confirm')}
             accessibilityLabel="Review payment"
           >

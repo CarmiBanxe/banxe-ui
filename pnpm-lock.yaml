@@ -261,6 +261,9 @@ importers:
 
   packages/shared:
     devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
       typescript:
         specifier: ^5.4.0
         version: 5.9.3

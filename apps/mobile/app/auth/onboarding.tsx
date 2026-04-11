@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ListRenderItemInfo,
+  Switch,
+  Linking,
 } from 'react-native'
 import Animated, {
   useAnimatedStyle,
@@ -56,9 +58,11 @@ const SLIDES: Slide[] = [
 function PaginationDot({
   index,
   scrollX,
+  totalSlides,
 }: {
   index: number
   scrollX: Animated.SharedValue<number>
+  totalSlides: number
 }) {
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
@@ -85,11 +89,12 @@ function PaginationDot({
     <Animated.View
       style={animatedStyle}
       className="h-2 rounded-pill bg-primary mx-1"
+      accessibilityLabel={`Step ${index + 1} of ${totalSlides}`}
     />
   )
 }
 
-// ── Slide ──────────────────────────────────────────────────────────────────────
+// ── Onboarding slide ───────────────────────────────────────────────────────────
 
 function OnboardingSlide({ item }: { item: Slide }) {
   return (
@@ -111,11 +116,105 @@ function OnboardingSlide({ item }: { item: Slide }) {
   )
 }
 
+// ── GDPR Consent screen (step 4) ───────────────────────────────────────────────
+
+function GdprConsentSlide({
+  gdprConsented,
+  onToggle,
+}: {
+  gdprConsented: boolean
+  onToggle: (v: boolean) => void
+}) {
+  return (
+    <View
+      style={{ width: SCREEN_WIDTH }}
+      className="flex-1 justify-center px-8"
+      accessibilityLabel="Privacy and data consent"
+    >
+      <Text
+        style={{ fontSize: 48, textAlign: 'center' }}
+        accessible={false}
+      >
+        🔐
+      </Text>
+
+      <Text className="text-2xl font-bold text-text-primary text-center mt-6 mb-2">
+        Your data, your rights
+      </Text>
+      <Text className="text-sm text-text-secondary text-center leading-relaxed mb-6">
+        BANXE processes your personal data to provide banking services under{' '}
+        <Text className="font-semibold">GDPR Art. 6(1)(b)</Text> (contract performance)
+        and FCA regulatory requirements.
+      </Text>
+
+      {/* Consent toggle */}
+      <View
+        className="bg-bg-surface border border-border-subtle rounded-xl p-4 mb-3"
+        accessible
+        accessibilityLabel={`Privacy Policy consent, ${gdprConsented ? 'accepted' : 'not accepted'}`}
+      >
+        <View className="flex-row items-start gap-3">
+          <Switch
+            value={gdprConsented}
+            onValueChange={onToggle}
+            trackColor={{ false: '#CBD5E0', true: '#00C6AE' }}
+            thumbColor="#FFFFFF"
+            accessibilityLabel="I agree to the Privacy Policy and Terms of Service"
+            accessibilityRole="switch"
+          />
+          <View className="flex-1">
+            <Text className="text-text-primary text-sm font-semibold mb-0.5">
+              Privacy Policy &amp; Terms of Service
+            </Text>
+            <Text className="text-text-secondary text-xs leading-relaxed">
+              I agree that BANXE may process my personal data for account
+              management, transaction processing, and regulatory compliance.
+            </Text>
+            <TouchableOpacity
+              onPress={() => void Linking.openURL('https://banxe.com/legal/privacy')}
+              accessibilityLabel="Read full Privacy Policy"
+              accessibilityRole="link"
+              className="mt-1"
+            >
+              <Text className="text-primary text-xs font-semibold">
+                Read full Privacy Policy →
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* Regulatory notice */}
+      <View className="bg-[#EBF8FF] border border-[#BEE3F8] rounded-xl p-3">
+        <Text className="text-[#2C5282] text-xs leading-relaxed">
+          <Text className="font-semibold">FCA authorised EMI.</Text>{' '}
+          Your funds are safeguarded under FCA CASS 7.15. FSCS does not apply to
+          e-money. You may withdraw consent at any time — this will not affect
+          services already provided.
+        </Text>
+      </View>
+
+      {!gdprConsented && (
+        <Text
+          className="text-error text-xs text-center mt-3"
+          accessibilityRole="alert"
+        >
+          You must accept the Privacy Policy to continue
+        </Text>
+      )}
+    </View>
+  )
+}
+
 // ── Onboarding screen ─────────────────────────────────────────────────────────
 
+const ALL_STEP_IDS = [...SLIDES.map((s) => s.id), 'gdpr']
+const TOTAL_STEPS = ALL_STEP_IDS.length  // 4: slides 1–3 + GDPR consent
+
 export default function OnboardingScreen() {
-  const flatListRef = useRef<FlatList<Slide>>(null)
+  const flatListRef = useRef<FlatList<string>>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [gdprConsented, setGdprConsented] = useState(false)
   const scrollX = useSharedValue(0)
 
   const buttonScale = useSharedValue(1)
@@ -123,42 +222,58 @@ export default function OnboardingScreen() {
     transform: [{ scale: buttonScale.value }],
   }))
 
+  const isGdprStep = currentIndex === TOTAL_STEPS - 1
+
   function handleNext() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    if (currentIndex < SLIDES.length - 1) {
-      const nextIndex = currentIndex + 1
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true })
-      setCurrentIndex(nextIndex)
-    } else {
+
+    if (isGdprStep) {
+      if (!gdprConsented) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+        return
+      }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       router.replace('/(tabs)')
+      return
     }
+
+    const nextIndex = currentIndex + 1
+    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true })
+    setCurrentIndex(nextIndex)
+    scrollX.value = nextIndex * SCREEN_WIDTH
   }
 
-  function handlePressIn() {
-    buttonScale.value = withSpring(0.96)
-  }
+  function handlePressIn() { buttonScale.value = withSpring(0.96) }
+  function handlePressOut() { buttonScale.value = withSpring(1) }
 
-  function handlePressOut() {
-    buttonScale.value = withSpring(1)
-  }
-
-  const isLast = currentIndex === SLIDES.length - 1
+  const ctaDisabled = isGdprStep && !gdprConsented
+  const ctaLabel = isGdprStep ? 'Get started' : 'Next'
 
   return (
     <SafeAreaView className="flex-1 bg-bg-page">
-      {/* Slides */}
       <FlatList
         ref={flatListRef}
-        data={SLIDES}
-        keyExtractor={(item) => item.id}
+        data={ALL_STEP_IDS}
+        keyExtractor={(item) => item}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         scrollEnabled={false}
-        renderItem={({ item }: ListRenderItemInfo<Slide>) => (
-          <OnboardingSlide item={item} />
-        )}
+        renderItem={({ item, index }: ListRenderItemInfo<string>) => {
+          if (item === 'gdpr') {
+            return (
+              <GdprConsentSlide
+                gdprConsented={gdprConsented}
+                onToggle={(v) => {
+                  setGdprConsented(v)
+                  if (v) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                }}
+              />
+            )
+          }
+          const slide = SLIDES[index]
+          return slide ? <OnboardingSlide item={slide} /> : null
+        }}
         onScroll={(e) => {
           scrollX.value = e.nativeEvent.contentOffset.x
         }}
@@ -168,34 +283,45 @@ export default function OnboardingScreen() {
 
       {/* Pagination dots */}
       <View className="flex-row justify-center items-center mb-8">
-        {SLIDES.map((_, i) => (
-          <PaginationDot key={i} index={i} scrollX={scrollX} />
+        {ALL_STEP_IDS.map((_, i) => (
+          <PaginationDot
+            key={i}
+            index={i}
+            scrollX={scrollX}
+            totalSlides={TOTAL_STEPS}
+          />
         ))}
       </View>
 
-      {/* CTA button */}
+      {/* CTA */}
       <View className="px-6 pb-8">
         <Animated.View style={buttonStyle}>
           <TouchableOpacity
             onPress={handleNext}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
-            className="bg-primary rounded-md py-4 items-center"
+            className="rounded-md py-4 items-center"
+            style={{ backgroundColor: ctaDisabled ? '#9AA5B4' : '#1A2B6B' }}
             accessibilityRole="button"
-            accessibilityLabel={isLast ? 'Get started' : 'Next slide'}
+            accessibilityLabel={ctaLabel}
+            accessibilityState={{ disabled: ctaDisabled }}
           >
-            <Text className="text-white font-semibold text-base">
-              {isLast ? 'Get started' : 'Next'}
-            </Text>
+            <Text className="text-white font-semibold text-base">{ctaLabel}</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {currentIndex === 0 && (
           <TouchableOpacity
-            onPress={() => router.replace('/(tabs)')}
+            onPress={() => {
+              // Skip → jump to GDPR consent (cannot bypass it)
+              const gdprIdx = TOTAL_STEPS - 1
+              flatListRef.current?.scrollToIndex({ index: gdprIdx, animated: true })
+              setCurrentIndex(gdprIdx)
+              scrollX.value = gdprIdx * SCREEN_WIDTH
+            }}
             className="mt-3 items-center py-2"
             accessibilityRole="button"
-            accessibilityLabel="Skip onboarding"
+            accessibilityLabel="Skip to consent screen"
           >
             <Text className="text-text-secondary text-sm">Skip</Text>
           </TouchableOpacity>

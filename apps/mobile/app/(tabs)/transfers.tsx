@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Switch,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import * as LocalAuthentication from 'expo-local-authentication'
@@ -28,6 +29,7 @@ export default function TransfersScreen() {
   const [ibanError, setIbanError] = useState<string | null>(null)
   const [amountError, setAmountError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [psd2Consent, setPsd2Consent] = useState(false)
 
   function validateIban(v: string): string | null {
     const clean = v.replace(/\s/g, '').toUpperCase()
@@ -221,7 +223,7 @@ export default function TransfersScreen() {
         </View>
 
         {/* PSD2 notice */}
-        <View className="bg-warning-subtle border border-yellow-200 rounded-xl p-3 mb-6">
+        <View className="bg-warning-subtle border border-yellow-200 rounded-xl p-3 mb-4">
           <Text className="text-text-secondary text-xs leading-relaxed">
             Under <Text className="font-semibold">PSD2 Article 97</Text>, this payment
             requires Strong Customer Authentication. Confirm with biometrics or PIN.
@@ -229,10 +231,38 @@ export default function TransfersScreen() {
           </Text>
         </View>
 
+        {/* PSD2 explicit consent checkbox — required before biometric confirm */}
+        <View
+          className="bg-bg-surface border border-border-subtle rounded-xl p-4 mb-6"
+          accessible
+          accessibilityLabel={`PSD2 consent, ${psd2Consent ? 'agreed' : 'not agreed'}`}
+        >
+          <View className="flex-row items-start gap-3">
+            <Switch
+              value={psd2Consent}
+              onValueChange={(v) => {
+                setPsd2Consent(v)
+                if (v) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+              }}
+              trackColor={{ false: '#CBD5E0', true: '#00C6AE' }}
+              thumbColor="#FFFFFF"
+              accessibilityLabel="I authorise this payment under PSD2 Article 97"
+              accessibilityRole="switch"
+            />
+            <Text className="flex-1 text-text-secondary text-xs leading-relaxed">
+              I confirm I authorise this payment of{' '}
+              <Text className="font-semibold text-text-primary">GBP {amount}</Text> to{' '}
+              <Text className="font-mono text-text-primary">{formattedIban}</Text> under{' '}
+              <Text className="font-semibold">PSD2 Article 97</Text>. I understand this
+              payment is irreversible once executed.
+            </Text>
+          </View>
+        </View>
+
         {/* Buttons */}
         <View className="flex-row gap-3">
           <TouchableOpacity
-            onPress={() => setStep('form')}
+            onPress={() => { setStep('form'); setPsd2Consent(false) }}
             className="flex-1 border border-border-default rounded-md py-4 items-center"
             accessibilityLabel="Go back to form"
             accessibilityRole="button"
@@ -242,11 +272,11 @@ export default function TransfersScreen() {
 
           <TouchableOpacity
             onPress={handleBiometricConfirm}
-            disabled={loading}
+            disabled={loading || !psd2Consent}
             className="flex-1 bg-primary rounded-md py-4 items-center"
             accessibilityLabel="Confirm payment with biometrics (PSD2 SCA)"
             accessibilityRole="button"
-            style={{ opacity: loading ? 0.7 : 1 }}
+            style={{ opacity: (loading || !psd2Consent) ? 0.5 : 1 }}
           >
             {loading ? (
               <ActivityIndicator color="#FFFFFF" />
