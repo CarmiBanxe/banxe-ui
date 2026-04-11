@@ -1,35 +1,44 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { loginAction } from "./actions"
+
+function SessionExpiredBanner() {
+  const searchParams = useSearchParams()
+  if (searchParams.get("reason") !== "session_expired") return null
+  return (
+    <div
+      role="alert"
+      className="mb-4 rounded-[--radius-md] bg-[--color-warning-subtle] border border-[--color-warning] px-3 py-2 text-xs text-[--color-warning]"
+    >
+      Your session expired. Please sign in again.
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [pin, setPin] = useState("")
   const [gdprConsent, setGdprConsent] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!gdprConsent) {
       setError("You must consent to data processing to continue.")
       return
     }
-    setLoading(true)
     setError(null)
-    try {
-      // TODO: wire to API — POST /v1/auth/login
-      await new Promise((r) => setTimeout(r, 800))
-      // redirect to dashboard on success
-      window.location.href = "/dashboard"
-    } catch {
-      setError("Login failed. Please check your credentials.")
-    } finally {
-      setLoading(false)
-    }
+    startTransition(async () => {
+      // loginAction returns an error string or redirects (never throws)
+      const err = await loginAction(email, pin)
+      if (err) setError(err)
+    })
   }
 
   return (
@@ -56,6 +65,11 @@ export default function LoginPage() {
         </CardHeader>
 
         <CardContent>
+          {/* Session-expired banner — reads ?reason= from URL */}
+          <Suspense>
+            <SessionExpiredBanner />
+          </Suspense>
+
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <Input
               label="Email address"
@@ -113,8 +127,8 @@ export default function LoginPage() {
               </p>
             )}
 
-            <Button type="submit" size="lg" loading={loading} className="w-full mt-2">
-              {loading ? "Signing in…" : "Sign in"}
+            <Button type="submit" size="lg" loading={isPending} className="w-full mt-2">
+              {isPending ? "Signing in…" : "Sign in"}
             </Button>
 
             <p className="text-center text-sm text-[--color-text-secondary]">
