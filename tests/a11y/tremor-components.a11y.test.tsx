@@ -5,13 +5,13 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { SpendingChart } from '../../apps/web/src/components/SpendingChart'
-import { WalletChart } from '../../apps/web/src/components/WalletChart'
-import { InsightCard } from '../../apps/web/src/components/InsightCard'
-import { TransactionTable } from '../../apps/web/src/components/TransactionTable'
-import { QuickActionButton } from '../../apps/web/src/components/QuickActionButton'
-import { ConfidenceBadge } from '../../apps/web/src/components/ConfidenceBadge'
-import type { SpendingInsight } from '../../apps/web/src/features/ai-insights'
+import { SpendingChart } from '../../apps/web-vite/src/components/SpendingChart'
+import { WalletChart } from '../../apps/web-vite/src/components/WalletChart'
+import { InsightCard } from '../../apps/web-vite/src/components/InsightCard'
+import { TransactionTable } from '../../apps/web-vite/src/components/TransactionTable'
+import { QuickActionButton } from '../../apps/web-vite/src/components/QuickActionButton'
+import { ConfidenceBadge } from '../../apps/web-vite/src/components/ConfidenceBadge'
+import type { SpendingInsight } from '../../apps/web-vite/src/features/ai-insights'
 
 expect.extend(toHaveNoViolations)
 

@@ -12,12 +12,12 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 
-import { Dashboard } from '../../apps/web/src/screens/Dashboard'
-import { Transactions } from '../../apps/web/src/screens/Transactions'
-import { Wallets } from '../../apps/web/src/screens/Wallets'
-import { Send } from '../../apps/web/src/screens/Send'
-import { AIAssistant } from '../../apps/web/src/screens/AIAssistant'
-import { Profile } from '../../apps/web/src/screens/Profile'
+import { Dashboard } from '../../apps/web-vite/src/screens/Dashboard'
+import { Transactions } from '../../apps/web-vite/src/screens/Transactions'
+import { Wallets } from '../../apps/web-vite/src/screens/Wallets'
+import { Send } from '../../apps/web-vite/src/screens/Send'
+import { AIAssistant } from '../../apps/web-vite/src/screens/AIAssistant'
+import { Profile } from '../../apps/web-vite/src/screens/Profile'
 
 expect.extend(toHaveNoViolations)
 

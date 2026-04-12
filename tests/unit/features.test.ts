@@ -3,9 +3,9 @@
  * BANXE AI BANK | IL-068 | Developer Plane
  */
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { useInsights } from '../../apps/web/src/features/ai-insights'
-import { useSendMoney } from '../../apps/web/src/features/payments'
-import { useKyc } from '../../apps/web/src/features/kyc'
+import { useInsights } from '../../apps/web-vite/src/features/ai-insights'
+import { useSendMoney } from '../../apps/web-vite/src/features/payments'
+import { useKyc } from '../../apps/web-vite/src/features/kyc'
 
 // ── useInsights ──────────────────────────────────────────────────────────────
 

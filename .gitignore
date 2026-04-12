@@ -13,3 +13,5 @@ node_modules/
 
 # Coverage reports
 coverage/
+.turbo
+.vercel
