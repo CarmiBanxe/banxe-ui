@@ -5,6 +5,7 @@ permissions:
   pull-requests: write
 jobs:
   dep-review:
+    if: ${{ false }}  # disabled: dependency-graph requires org-level Code Security; tracked in follow-up
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
