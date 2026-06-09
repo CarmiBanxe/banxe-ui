@@ -14,4 +14,7 @@ export type {
   CustomerResponse,
   CustomerListResponse,
   KycWorkflow,
+  IntentSubmitRequest,
+  IntentGovernanceEvent,
+  IntentResponse,
 } from "./endpoints"
