@@ -120,6 +120,31 @@ export interface KycWorkflow {
   updated_at?: string
 }
 
+// ── L1 Intent Layer (ADR-049, S8) — chat→L1→L2→port→lineage ──────────────────
+
+export interface IntentSubmitRequest {
+  intent_text: string
+  /** Optional caller trace id; the backend generates one when absent. */
+  correlation_id?: string
+}
+
+/** Emitted when an intent resolves to no canonical process (ADR-048 D3.3). */
+export interface IntentGovernanceEvent {
+  correlation_id: string
+  status: "UNRESOLVED" | string
+  reason: string
+}
+
+/** Disposition of POST /v1/intent: a dispatched decision record, a governance
+ *  event, or a safe NOT_ENABLED no-op (the layer is off pre-activation). */
+export interface IntentResponse {
+  enabled: boolean
+  disposition: "DISPATCHED" | "GOVERNANCE_EVENT" | "NOT_ENABLED" | string
+  decision_record?: AgentDecisionRecord | null
+  governance_event?: IntentGovernanceEvent | null
+  detail?: string | null
+}
+
 // ── API factory ───────────────────────────────────────────────────────────────
 
 /**
@@ -194,18 +219,28 @@ export function createBanxeApi(client: BanxeApiClient) {
         client.get<CustomerResponse>(`/v1/customers/${customerId}`),
     },
 
+    intent: {
+      /**
+       * POST /v1/intent — submit a free-form client intent (chat→L1→L2→port→
+       * lineage). Returns the dispatched AgentDecisionRecord, a governance event
+       * (UNRESOLVED), or a NOT_ENABLED no-op. Gated by INTENT_LAYER_ENABLED.
+       */
+      submit: (body: IntentSubmitRequest) =>
+        client.post<IntentResponse>("/v1/intent", body),
+
+      /** GET /v1/intent/decision/{correlation_id} — fetch the emitted record. */
+      getDecision: (correlationId: string) =>
+        client.get<AgentDecisionRecord>(`/v1/intent/decision/${correlationId}`),
+    },
+
     decisions: {
       /**
-       * GET /v1/decisions/by-correlation/{correlation_id} — fetch the
-       * AgentDecisionRecord for a decision lineage trace (ADR-046 / S4 sink).
-       *
-       * Backend route is wired in S8; in S7 this binds to the existing API
-       * client and is exercised in tests via a mock/fixture.
+       * GET /v1/intent/decision/{correlation_id} — fetch the AgentDecisionRecord
+       * for a decision lineage trace (ADR-046 / S4 sink). Backed by the S8 L1
+       * Intent Layer route (the same record the chat surface holds by id).
        */
       getByCorrelation: (correlationId: string) =>
-        client.get<AgentDecisionRecord>(
-          `/v1/decisions/by-correlation/${correlationId}`
-        ),
+        client.get<AgentDecisionRecord>(`/v1/intent/decision/${correlationId}`),
     },
   }
 }

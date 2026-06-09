@@ -1,45 +1,110 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
+import type { IntentResponse, IntentSubmitRequest } from '@banxe/shared/api'
 import { ChatShell } from '../../components/ChatShell'
 import type { ChatMessage } from '../../components/ChatShell'
-import type { AgentDecisionRecord } from '@banxe/shared/types'
+import { apiClient } from '../../api/client'
 
 /**
- * DecisionChat (S7) — chat-first surface mounted ALONGSIDE the screen-first
- * nav (non-destructive; S8 converges the two). An agent response here is a
- * traceable AgentDecisionRecord rendered inline via DecisionView.
+ * DecisionChat (S8) — the chat-first surface, now REALLY wired.
  *
- * The seeded conversation is illustrative scaffolding; real L1 Intent → agent
- * → decision-record dispatch is wired in S8.
+ * S7 was a scaffold (a seeded conversation, a placeholder onSubmit). S8 replaces
+ * that with the live L1 Intent Layer flow:
+ *
+ *   user text → POST /v1/intent (typed client) → L1 classify → route → L2 mask
+ *             → ADR-046 decision record → rendered inline as a DecisionView.
+ *
+ * The user message renders OPTIMISTICALLY (before the round-trip); the agent
+ * response is structured, never free text — a DecisionView for a dispatched
+ * record, or a governance / HITL message when the intent is UNRESOLVED, the
+ * layer is not enabled, or no in-process mask handled it.
+ *
+ * The submit function is injected (defaulting to the real typed API) so the
+ * container is unit-testable without a live backend.
  */
 
-const SAMPLE_DECISION: AgentDecisionRecord = {
-  record_id: '01HZ8K9M4Q7example0001',
-  timestamp: '2026-06-09T10:15:30.123Z',
-  agent_id: 'aml_check_agent',
-  triggering_event: 'intent_submission:int_4471',
-  intent: 'Send €1,200 to FAKE_SEPA Recipient GmbH',
-  policies_evaluated: ['I-02', 'R-COMP-FCA-02', 'aml_scenarios:v7'],
-  compliance_result: 'PASS',
-  reasoning_summary:
-    'Counterparty and amount within the established profile; no sanctions match; AML scenarios clear.',
-  confidence_score: 0.94,
-  action_taken: 'APPROVE_PAYMENT',
-  human_reviewed_by: null,
-  correlation_id: 'corr-7f3a2b10',
-  cost_tokens: 1840,
-  cost_amount: '0.0212',
-  budget_window_ref: 'aml_check_agent:2026-06-09T10',
-  budget_breach_flag: 'NONE',
-  immutable_storage_ref: null,
-  input_tokens: null,
-  output_tokens: null,
+export type SubmitIntent = (body: IntentSubmitRequest) => Promise<IntentResponse>
+
+// POST /v1/intent via the typed web app client. The shared typed contract lives
+// in packages/shared/src/api/endpoints.ts (api.intent.submit) for web-next/mobile;
+// web-vite calls its own client with the same IntentResponse type.
+const defaultSubmitIntent: SubmitIntent = (body) =>
+  apiClient.post<IntentResponse>('/v1/intent', body)
+
+export interface DecisionChatProps {
+  /** Override the intent submission (tests inject a fake; defaults to POST /v1/intent). */
+  submitIntent?: SubmitIntent
 }
 
-const SEED: ChatMessage[] = [
-  { id: 'u-1', role: 'user', kind: 'text', text: 'Send €1,200 to FAKE_SEPA Recipient GmbH' },
-  { id: 'a-1', role: 'agent', kind: 'decision', decision: SAMPLE_DECISION },
-]
+const AGENT_ERROR =
+  'Something went wrong reaching BANXE AI. Your request was not actioned — please try again.'
 
-export function DecisionChat(): React.ReactElement {
-  return <ChatShell title="BANXE AI — Decisions" messages={SEED} />
+function newCorrelationId(): string {
+  const uuid = globalThis.crypto?.randomUUID?.()
+  return uuid ? `corr-${uuid}` : `corr-${Date.now().toString(36)}`
+}
+
+/** Turn an L1 disposition into the agent's chat message. */
+function toAgentMessage(response: IntentResponse, id: string): ChatMessage {
+  if (response.decision_record) {
+    return { id, role: 'agent', kind: 'decision', decision: response.decision_record }
+  }
+  if (response.governance_event) {
+    return {
+      id,
+      role: 'agent',
+      kind: 'text',
+      text: `I can't action that automatically — ${response.governance_event.reason} A human reviewer will follow up (HITL).`,
+    }
+  }
+  if (!response.enabled) {
+    return {
+      id,
+      role: 'agent',
+      kind: 'text',
+      text: 'AI intent routing is not enabled yet. No action was taken.',
+    }
+  }
+  return {
+    id,
+    role: 'agent',
+    kind: 'text',
+    text: response.detail ?? 'Your request was received and routed for review.',
+  }
+}
+
+export function DecisionChat({
+  submitIntent = defaultSubmitIntent,
+}: DecisionChatProps = {}): React.ReactElement {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+
+  const onSubmit = useCallback(
+    async (text: string): Promise<void> => {
+      const correlationId = newCorrelationId()
+      // Optimistic user-message render (kept from S7).
+      setMessages((prev) => [
+        ...prev,
+        { id: `u-${prev.length}-${correlationId}`, role: 'user', kind: 'text', text },
+      ])
+      try {
+        const response = await submitIntent({ intent_text: text, correlation_id: correlationId })
+        setMessages((prev) => [
+          ...prev,
+          toAgentMessage(response, `a-${prev.length}-${correlationId}`),
+        ])
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${prev.length}-${correlationId}`,
+            role: 'agent',
+            kind: 'text',
+            text: AGENT_ERROR,
+          },
+        ])
+      }
+    },
+    [submitIntent],
+  )
+
+  return <ChatShell title="BANXE AI — Decisions" messages={messages} onSubmit={onSubmit} />
 }
