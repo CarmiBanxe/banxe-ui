@@ -28,23 +28,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # This is a pnpm workspace (pnpm-lock.yaml). Install pnpm before setup-node
+      # so the dependency cache resolves; `npm ci` has no lockfile here and fails.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: TypeScript check (packages/ui)
-        run: npx tsc --noEmit -p packages/ui/tsconfig.json
+        run: pnpm exec tsc --noEmit -p packages/ui/tsconfig.json
 
       - name: ESLint
-        run: npx eslint packages/ui/src apps/web-vite/src --ext .ts,.tsx --max-warnings 0 || true
+        run: pnpm exec eslint packages/ui/src apps/web-vite/src --ext .ts,.tsx --max-warnings 0 || true
 
       - name: Vitest with coverage (unit + a11y + e2e)
         run: |
-          npx vitest run --coverage --reporter=verbose
+          pnpm exec vitest run --coverage --reporter=verbose
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "✅ All tests passed" >> $GITHUB_STEP_SUMMARY
 

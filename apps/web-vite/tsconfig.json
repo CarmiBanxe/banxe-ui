@@ -19,6 +19,8 @@
     "paths": {
       "@banxe/ui": ["../../packages/ui/src"],
       "@banxe/ui/*": ["../../packages/ui/src/*"],
+      "@banxe/shared": ["../../packages/shared/src"],
+      "@banxe/shared/*": ["../../packages/shared/src/*"],
       "@banxe/design-tokens": ["../../packages/design-tokens"],
       "@/*": ["./src/*"]
     }
