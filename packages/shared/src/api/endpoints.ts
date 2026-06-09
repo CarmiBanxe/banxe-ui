@@ -17,6 +17,7 @@
  * I-05: all monetary amounts are Decimal strings — never number.
  */
 
+import type { AgentDecisionRecord } from "../types/index.js"
 import type { BanxeApiClient } from "./client"
 
 // ── Response types matching banxe-emi-stack Pydantic schemas ─────────────────
@@ -191,6 +192,20 @@ export function createBanxeApi(client: BanxeApiClient) {
       /** GET /v1/customers/{id} — get customer profile */
       get: (customerId: string) =>
         client.get<CustomerResponse>(`/v1/customers/${customerId}`),
+    },
+
+    decisions: {
+      /**
+       * GET /v1/decisions/by-correlation/{correlation_id} — fetch the
+       * AgentDecisionRecord for a decision lineage trace (ADR-046 / S4 sink).
+       *
+       * Backend route is wired in S8; in S7 this binds to the existing API
+       * client and is exercised in tests via a mock/fixture.
+       */
+      getByCorrelation: (correlationId: string) =>
+        client.get<AgentDecisionRecord>(
+          `/v1/decisions/by-correlation/${correlationId}`
+        ),
     },
   }
 }

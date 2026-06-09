@@ -23,6 +23,7 @@ const Transactions = lazy(() => import('./screens/Transactions').then((m) => ({ 
 const Wallets      = lazy(() => import('./screens/Wallets').then((m) => ({ default: m.Wallets })))
 const Send         = lazy(() => import('./screens/Send').then((m) => ({ default: m.Send })))
 const AIAssistant  = lazy(() => import('./screens/AIAssistant').then((m) => ({ default: m.AIAssistant })))
+const DecisionChat = lazy(() => import('./screens/DecisionChat').then((m) => ({ default: m.DecisionChat })))
 const Profile      = lazy(() => import('./screens/Profile').then((m) => ({ default: m.Profile })))
 
 function ScreenFallback() {
@@ -77,6 +78,15 @@ export function AppRouter(): React.ReactElement {
           element={
             <Suspense fallback={<ScreenFallback />}>
               <AIAssistant />
+            </Suspense>
+          }
+        />
+        {/* S7: chat-first decision surface, additive alongside screen-first nav (S8 converges). */}
+        <Route
+          path="chat"
+          element={
+            <Suspense fallback={<ScreenFallback />}>
+              <DecisionChat />
             </Suspense>
           }
         />
