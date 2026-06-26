@@ -6,15 +6,21 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Fetch Confluence page
         run: |
           mkdir -p docs/confluence
+          if [ -z "${{ secrets.CONFLUENCE_EMAIL }}" ] || [ -z "${{ secrets.CONFLUENCE_TOKEN }}" ]; then
+            echo "::warning::Confluence secrets not configured — skipping sync"
+            exit 0
+          fi
           curl -sf -u "${{ secrets.CONFLUENCE_EMAIL }}:${{ secrets.CONFLUENCE_TOKEN }}" \
             "https://banxe.atlassian.net/wiki/rest/api/content/1243185153?expand=body.storage,version,title" \
-            -o docs/confluence/page-1243185153.json
-          python3 -c "import json;d=json.load(open('docs/confluence/page-1243185153.json'));print('Synced:',d['title'],'v'+str(d['version']['number']))"
+            -o docs/confluence/page-1243185153.json \
+            || { echo "::warning::Confluence fetch failed (expired token / page 1243185153 restricted or deleted) — skipping sync"; exit 0; }
+          python3 -c "import json;d=json.load(open('docs/confluence/page-1243185153.json'));print('Synced:',d['title'],'v'+str(d['version']['number'']))"
       - name: Commit if changed
         run: |
           git config user.name 'github-actions[bot]'
